@@ -1,0 +1,43 @@
+{
+	"ImportPath": "github.com/kumoru/kumoru-cli",
+	"GoVersion": "go1.5.1",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "code.google.com/p/go-uuid/uuid",
+			"Comment": "null-15",
+			"Rev": "35bc42037350f0078e3c974c6ea690f1926603ab"
+		},
+		{
+			"ImportPath": "github.com/Sirupsen/logrus",
+			"Comment": "v0.8.7-30-g4643a7e",
+			"Rev": "4643a7efec9b8fd7548882e7b30095711343100f"
+		},
+		{
+			"ImportPath": "github.com/jawher/mow.cli",
+			"Rev": "ec353aa1195a385f193bd2e681d26f739b584b6e"
+		},
+		{
+			"ImportPath": "github.com/kumoru/kumoru-sdk-go/kumoru",
+			"Rev": "a2bd8fd4f2b58bb06edfa0ae916794c21b1e2ff8"
+		},
+		{
+			"ImportPath": "github.com/kumoru/kumoru-sdk-go/service/application",
+			"Rev": "a2bd8fd4f2b58bb06edfa0ae916794c21b1e2ff8"
+		},
+		{
+			"ImportPath": "github.com/kumoru/kumoru-sdk-go/service/authorization",
+			"Rev": "a2bd8fd4f2b58bb06edfa0ae916794c21b1e2ff8"
+		},
+		{
+			"ImportPath": "github.com/kumoru/kumoru-sdk-go/service/pools",
+			"Rev": "a2bd8fd4f2b58bb06edfa0ae916794c21b1e2ff8"
+		},
+		{
+			"ImportPath": "github.com/vaughan0/go-ini",
+			"Rev": "a98ad7ee00ec53921f08832bc06ecf7fd600e6a1"
+		}
+	]
+}

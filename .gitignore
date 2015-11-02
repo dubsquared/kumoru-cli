@@ -1,1 +1,3 @@
-kumoru-cli
+kumoru
+vendor/*
+builds/*
