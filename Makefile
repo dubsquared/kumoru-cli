@@ -17,5 +17,7 @@ clean:
 restore:
 	GO15VENDOREXPERIMENT=1 godep restore
 
-release:
-	clean restore build osx-binary linux-binary
+test:
+	GO15VENDOREXPERIMENT=1 go test -cover
+
+release: clean restore test osx-binary linux-binary
