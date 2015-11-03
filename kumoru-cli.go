@@ -31,7 +31,7 @@ func main() {
 		act.Command("show", "Show acount information", account.Show)
 	})
 
-	app.Command("apps", "Application actions", func(apps *cli.Cmd) {
+	app.Command("applications", "Application actions", func(apps *cli.Cmd) {
 		apps.Command("create", "Create a new application", applications.Create)
 		apps.Command("list", "List availablable applications", applications.List)
 		apps.Command("show", "Show application information", applications.Show)
