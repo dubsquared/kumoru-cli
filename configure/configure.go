@@ -75,7 +75,7 @@ func writeConfig(conf config) {
 	err = cfg.SaveTo(filename)
 	validate(err)
 
-	fmt.Println("Configuration file has been saved to: %s", filename)
+	fmt.Println("Configuration file has been saved to: ", filename)
 }
 
 func exists(path string) (bool, error) {
@@ -129,7 +129,7 @@ func endpoints() (string, string, string) {
 		apps = "http://authorization.api.kumoru.io"
 	}
 
-	fmt.Print("Enter Pool endpoint [http://authorization.api.kumoru.io:5000]:")
+	fmt.Print("Enter Pool endpoint [http://pool.api.kumoru.io:5000]:")
 	pool, _ := reader.ReadString('\n')
 	if pool == "\n" {
 		pool = "http://authorization.api.kumoru.io:5000"
