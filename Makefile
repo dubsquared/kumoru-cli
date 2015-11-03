@@ -9,6 +9,11 @@ osx-binary:
 build:
 	GO15VENDOREXPERIMENT=1 go build -o kumoru kumoru-cli.go
 
+install: build mv-bin
+
+mv-bin:
+	cp kumoru ${GOPATH}/bin/
+
 clean:
 	rm -f kumoru
 	rm -f builds/osx/kumoru
