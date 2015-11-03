@@ -37,8 +37,6 @@ func main() {
 		apps.Command("show", "Show application information", applications.Show)
 	})
 
-	app.Command("configure", "Configure kumoru-cli client", configure.Cfgcli)
-
 	app.Command("deployment", "test", deployment.Deploy)
 
 	app.Command("pool", "Pool actions", func(pool *cli.Cmd) {
@@ -55,6 +53,8 @@ func main() {
 	app.Command("tokens", "Token actions", func(tkn *cli.Cmd) {
 		tkn.Command("create", "Create a new token, and get a secret", token.Create)
 	})
+
+	app.Command("configure", "Configure kumoru-cli client", configure.Cfgcli)
 
 	app.Run(os.Args)
 }
