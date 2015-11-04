@@ -2,6 +2,7 @@ package pools
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/jawher/mow.cli"
 	"github.com/kumoru/kumoru-sdk-go/service/pools"
@@ -21,6 +22,11 @@ func Create(cmd *cli.Cmd) {
 	})
 
 	cmd.Action = func() {
+		if *location == "" || *credentials == "" {
+			fmt.Println("Error: incorrect usage")
+			cmd.PrintHelp()
+			os.Exit(1)
+		}
 		pools.Create(*location, *credentials)
 	}
 
