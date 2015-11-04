@@ -25,10 +25,9 @@ type config struct {
 
 func Cfgcli(cmd *cli.Cmd) {
 	cmd.Action = func() {
-		usr, err := user.Current()
-		validate(err)
+		usrHome := os.Getenv("HOME")
 
-		file := usr.HomeDir + "/.kumoru/config"
+		file := usrHome + "/.kumoru/config"
 		if _, err := os.Stat(file); err == nil {
 			fmt.Println(file, "configuration file already exists.")
 			os.Exit(1)
