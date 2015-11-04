@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/user"
 	"strings"
 
 	"gopkg.in/ini.v1"
@@ -43,15 +42,14 @@ func Cfgcli(cmd *cli.Cmd) {
 }
 
 func writeConfig(conf config) {
-	usr, err := user.Current()
-	validate(err)
+	usrHome := os.Getenv("HOME")
 
-	path := usr.HomeDir + "/.kumoru/"
+	path := usrHome + "/.kumoru/"
 	filename := path + "config"
 
 	cfg := ini.Empty()
 
-	_, err = cfg.Section("auth").NewKey("kumoru_username", conf.user)
+	_, err := cfg.Section("auth").NewKey("kumoru_username", conf.user)
 	validate(err)
 	_, err = cfg.Section("auth").NewKey("kumoru_password", conf.pass)
 	validate(err)
