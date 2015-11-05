@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/jawher/mow.cli"
+	"github.com/kumoru/kumoru-sdk-go/kumoru/utils"
 	"github.com/kumoru/kumoru-sdk-go/service/application"
 )
 
@@ -13,20 +14,21 @@ func Deploy(cmd *cli.Cmd) {
 		Desc: "Application UUID",
 	})
 
-	cmd.Command("create", "Create deployments", func(app *cli.Cmd) {
+	cmd.Command("deploy", "Create deployments", func(app *cli.Cmd) {
 		app.Action = func() {
-			application.ApplicationDeploy(*uuid)
+			resp, body, errs := application.ApplicationDeploy(*uuid)
+			if errs != nil {
+				fmt.Println("Could not retrieve a list of applications.")
+			}
+
+			fmt.Println(resp.Status)
+
+			utils.Pprint(body)
 		}
 	})
 	cmd.Command("show", "Create deployments", func(app *cli.Cmd) {
 		app.Action = func() {
-			application.ApplicationDelete(*uuid)
 			fmt.Println("STUB: show deployment action")
-		}
-	})
-	cmd.Command("delete", "Create deployments", func(app *cli.Cmd) {
-		app.Action = func() {
-			fmt.Println("STUB: delete deployment action")
 		}
 	})
 }

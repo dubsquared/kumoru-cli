@@ -1,7 +1,10 @@
 package account
 
 import (
+	"fmt"
+
 	"github.com/jawher/mow.cli"
+	"github.com/kumoru/kumoru-sdk-go/kumoru/utils"
 	"github.com/kumoru/kumoru-sdk-go/service/authorization"
 )
 
@@ -28,7 +31,25 @@ func Create(cmd *cli.Cmd) {
 	})
 
 	cmd.Action = func() {
-		authorization.CreateAcct(*user, *fName, *lName, *password)
+		resp, body, errs := authorization.CreateAcct(*user, *fName, *lName, *password)
+
+		if errs != nil {
+			fmt.Println("Could not create a new account.")
+		}
+
+		switch resp.StatusCode {
+		case 200:
+			fmt.Println("Account created successfully")
+			fmt.Println(resp.Status)
+			utils.Pprint(body)
+		case 409:
+			fmt.Println("Account already exists.")
+			fmt.Println(resp.Status)
+			utils.Pprint(body)
+		default:
+			fmt.Println(resp.Status)
+			utils.Pprint(body)
+		}
 	}
 }
 
@@ -40,6 +61,19 @@ func Show(cmd *cli.Cmd) {
 	})
 
 	cmd.Action = func() {
-		authorization.ShowAcct(*user)
+		resp, body, errs := authorization.ShowAcct(*user)
+		if errs != nil {
+			fmt.Println("Could not create a new account.")
+		}
+
+		switch resp.StatusCode {
+		case 200:
+			fmt.Println("Account created successfully")
+			utils.Pprint(body)
+		default:
+			fmt.Println(resp.Status)
+			utils.Pprint(body)
+		}
+
 	}
 }

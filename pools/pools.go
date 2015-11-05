@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/jawher/mow.cli"
+	"github.com/kumoru/kumoru-sdk-go/kumoru/utils"
 	"github.com/kumoru/kumoru-sdk-go/service/pools"
 )
 
@@ -27,23 +28,32 @@ func Create(cmd *cli.Cmd) {
 			cmd.PrintHelp()
 			os.Exit(1)
 		}
-		pools.Create(*location, *credentials)
-	}
+		resp, body, errs := pools.Create(*location, *credentials)
 
+		if errs != nil {
+			fmt.Println("Could not retrieve a list of applications.")
+		}
+
+		fmt.Println(resp.Status)
+
+		utils.Pprint(body)
+	}
 }
 
 func List(cmd *cli.Cmd) {
-
-	bootstrap := cmd.Bool(cli.BoolOpt{
-		Name:  "b bootstrap",
-		Value: false,
-		Desc:  "Needed if you are boostraping a pool",
-	})
-
 	cmd.Action = func() {
-		pools.List(*bootstrap)
-	}
+		resp, body, errs := pools.List()
 
+		if errs != nil {
+			fmt.Println("Could not retrieve a list of applications.")
+		}
+
+		if resp.StatusCode != 200 {
+			fmt.Println(resp.Status)
+		}
+
+		utils.Pprint(body)
+	}
 }
 
 func Show(cmd *cli.Cmd) {

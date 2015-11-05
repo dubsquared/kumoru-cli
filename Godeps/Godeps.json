@@ -18,19 +18,19 @@
 		},
 		{
 			"ImportPath": "github.com/kumoru/kumoru-sdk-go/kumoru",
-			"Rev": "e6c677f772fd9f4558c6565879ac93565bf929dc"
+			"Rev": "8191d2b00ad60524b921557285a13b5489738037"
 		},
 		{
 			"ImportPath": "github.com/kumoru/kumoru-sdk-go/service/application",
-			"Rev": "e6c677f772fd9f4558c6565879ac93565bf929dc"
+			"Rev": "8191d2b00ad60524b921557285a13b5489738037"
 		},
 		{
 			"ImportPath": "github.com/kumoru/kumoru-sdk-go/service/authorization",
-			"Rev": "e6c677f772fd9f4558c6565879ac93565bf929dc"
+			"Rev": "8191d2b00ad60524b921557285a13b5489738037"
 		},
 		{
 			"ImportPath": "github.com/kumoru/kumoru-sdk-go/service/pools",
-			"Rev": "e6c677f772fd9f4558c6565879ac93565bf929dc"
+			"Rev": "8191d2b00ad60524b921557285a13b5489738037"
 		},
 		{
 			"ImportPath": "github.com/vaughan0/go-ini",
