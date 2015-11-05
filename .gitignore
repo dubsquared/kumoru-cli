@@ -28,3 +28,4 @@ _testmain.go
 kumoru
 vendor/*
 builds/*
+Godeps/_workspace

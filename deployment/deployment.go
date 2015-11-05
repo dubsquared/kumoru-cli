@@ -15,12 +15,12 @@ func Deploy(cmd *cli.Cmd) {
 
 	cmd.Command("create", "Create deployments", func(app *cli.Cmd) {
 		app.Action = func() {
-			application.DeploymentDeploy(*uuid)
+			application.ApplicationDeploy(*uuid)
 		}
 	})
 	cmd.Command("show", "Create deployments", func(app *cli.Cmd) {
 		app.Action = func() {
-			application.DeploymentDelete(*uuid)
+			application.ApplicationDelete(*uuid)
 			fmt.Println("STUB: show deployment action")
 		}
 	})
