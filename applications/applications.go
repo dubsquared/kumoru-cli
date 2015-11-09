@@ -10,7 +10,13 @@ import (
 
 func List(cmd *cli.Cmd) {
 	cmd.Action = func() {
-		application.List()
+		resp, body, errs := application.List()
+		if errs != nil {
+			fmt.Println("Could not retrieve application information.")
+		}
+		fmt.Println(resp.Status)
+		fmt.Println(resp)
+		utils.Pprint(body)
 	}
 }
 
@@ -25,7 +31,7 @@ func Show(cmd *cli.Cmd) {
 		if errs != nil {
 			fmt.Println("Could not retrieve application information.")
 		}
-		fmt.Println(resp.Status)
+		fmt.Println(resp.StatusCode)
 
 		utils.Pprint(body)
 	}
@@ -62,7 +68,48 @@ func Create(cmd *cli.Cmd) {
 		if errs != nil {
 			fmt.Println("Could not create application.")
 		}
-		fmt.Println(resp.Status)
+		fmt.Println(resp.StatusCode)
+
+		utils.Pprint(body)
+	}
+}
+
+func Patch(cmd *cli.Cmd) {
+	uuid := cmd.String(cli.StringArg{
+		Name: "UUID",
+		Desc: "Application UUID",
+	})
+	image := cmd.String(cli.StringOpt{
+		Name: "IMG_URL",
+		Desc: "Image URL",
+	})
+
+	name := cmd.String(cli.StringOpt{
+		Name: "APP_NAME",
+		Desc: "Application Name",
+	})
+
+	enVars := cmd.Strings(cli.StringsOpt{
+		Name: "e env",
+		Desc: "Environment variable",
+	})
+
+	rules := cmd.Strings(cli.StringsOpt{
+		Name: "r rule",
+		Desc: "Application Deployment rules",
+	})
+
+	ports := cmd.Strings(cli.StringsOpt{
+		Name: "p port",
+		Desc: "Port",
+	})
+
+	cmd.Action = func() {
+		resp, body, errs := application.Patch(*uuid, *name, *image, *enVars, *rules, *ports)
+		if errs != nil {
+			fmt.Println("Could not patch application.")
+		}
+		fmt.Println(resp.StatusCode)
 
 		utils.Pprint(body)
 	}

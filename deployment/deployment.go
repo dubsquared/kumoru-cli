@@ -16,7 +16,7 @@ func Deploy(cmd *cli.Cmd) {
 
 	cmd.Command("deploy", "Create deployments", func(app *cli.Cmd) {
 		app.Action = func() {
-			resp, body, errs := application.ApplicationDeploy(*uuid)
+			resp, body, errs := application.Deploy(*uuid)
 			if errs != nil {
 				fmt.Println("Could not retrieve a list of applications.")
 			}

@@ -33,6 +33,7 @@ func main() {
 
 	app.Command("applications", "Application actions", func(apps *cli.Cmd) {
 		apps.Command("create", "Create a new application", applications.Create)
+		apps.Command("patch", "Show application information", applications.Patch)
 		apps.Command("list", "List availablable applications", applications.List)
 		apps.Command("show", "Show application information", applications.Show)
 	})
