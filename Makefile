@@ -7,7 +7,7 @@ osx-binary:
 	GO15VENDOREXPERIMENT=1 CGO_ENABLED=0 GOOS=darwin go build -a -installsuffix cgo -o builds/osx/kumoru kumoru-cli.go
 
 build:
-	GO15VENDOREXPERIMENT=1 go build -o kumoru kumoru-cli.go
+	GO15VENDOREXPERIMENT=1 go build -a -o kumoru kumoru-cli.go
 
 install: build mv-bin
 
@@ -21,6 +21,9 @@ clean:
 
 restore:
 	GO15VENDOREXPERIMENT=1 godep restore
+
+depsave:
+	GO15VENDOREXPERIMENT=1 godep save
 
 test:
 	GO15VENDOREXPERIMENT=1 go test -cover
