@@ -63,3 +63,24 @@ func Show(cmd *cli.Cmd) {
 	}
 
 }
+
+func Delete(cmd *cli.Cmd) {
+	uuid := cmd.String(cli.StringArg{
+		Name: "UUID",
+		Desc: "POOL UUID",
+	})
+
+	cmd.Action = func() {
+		resp, body, errs := pools.Delete(*uuid)
+
+		if errs != nil {
+			fmt.Println("Could not retrieve a list of applications.")
+		}
+
+		if resp.StatusCode != 202 {
+			fmt.Println(resp.Status)
+		}
+
+		utils.Pprint(body)
+	}
+}
