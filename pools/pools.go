@@ -74,7 +74,7 @@ func Delete(cmd *cli.Cmd) {
 		resp, body, errs := pools.Delete(*uuid)
 
 		if errs != nil {
-			fmt.Println("Could not retrieve a list of applications.")
+			fmt.Printf("Could not delete pool %s.\n", *uuid)
 		}
 
 		if resp.StatusCode != 202 {
