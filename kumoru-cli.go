@@ -26,7 +26,7 @@ func init() {
 func main() {
 	app := cli.App("kumoru", "Utility to interact with Kumoru services.")
 
-	app.Version("v version", "0.0.1")
+	app.Version("v version", "0.0.2")
 
 	app.Command("account", "Account actions", func(act *cli.Cmd) {
 		act.Command("create", "Create an account ", account.Create)
@@ -35,6 +35,7 @@ func main() {
 
 	app.Command("applications", "Application actions", func(apps *cli.Cmd) {
 		apps.Command("create", "Create a new application", applications.Create)
+		apps.Command("delete", "Delete an application", applications.Delete)
 		apps.Command("patch", "Show application information", applications.Patch)
 		apps.Command("list", "List availablable applications", applications.List)
 		apps.Command("show", "Show application information", applications.Show)
