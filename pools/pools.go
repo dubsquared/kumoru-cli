@@ -31,7 +31,7 @@ func Create(cmd *cli.Cmd) {
 		resp, body, errs := pools.Create(*location, *credentials)
 
 		if errs != nil {
-			fmt.Println("Could not retrieve a list of applications.")
+			fmt.Println("Could not create a new pool.")
 		}
 
 		fmt.Println(resp.Status)
@@ -45,7 +45,7 @@ func List(cmd *cli.Cmd) {
 		resp, body, errs := pools.List()
 
 		if errs != nil {
-			fmt.Println("Could not retrieve a list of applications.")
+			fmt.Println("Could not retrieve a list of pools.")
 		}
 
 		if resp.StatusCode != 200 {

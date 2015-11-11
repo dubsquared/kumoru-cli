@@ -8,6 +8,23 @@ import (
 	"github.com/kumoru/kumoru-sdk-go/service/application"
 )
 
+func Delete(cmd *cli.Cmd) {
+	uuid := cmd.String(cli.StringArg{
+		Name: "UUID",
+		Desc: "Application UUID",
+	})
+
+	cmd.Action = func() {
+		resp, body, errs := application.Delete(*uuid)
+		if errs != nil {
+			fmt.Println("Could not delete application.")
+		}
+		fmt.Println(resp.StatusCode)
+
+		utils.Pprint(body)
+	}
+}
+
 func List(cmd *cli.Cmd) {
 	cmd.Action = func() {
 		resp, body, errs := application.List()
