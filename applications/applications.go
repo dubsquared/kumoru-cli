@@ -1,7 +1,9 @@
 package applications
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 
 	"github.com/jawher/mow.cli"
 	"github.com/kumoru/kumoru-sdk-go/kumoru/utils"
@@ -80,8 +82,25 @@ func Create(cmd *cli.Cmd) {
 		Desc: "Port",
 	})
 
+	file := cmd.String(cli.StringOpt{
+		Name: "f file",
+		Desc: "Environment variables file",
+	})
+
 	cmd.Action = func() {
-		resp, body, errs := application.Create(*name, *image, *enVars, *rules, *ports)
+
+		var eVars []string
+
+		fmt.Println(*file)
+
+		if *file != "" {
+			eVars = readFile(*file)
+		} else {
+			eVars = *enVars
+		}
+
+		fmt.Println(eVars)
+		resp, body, errs := application.Create(*name, *image, eVars, *rules, *ports)
 		if errs != nil {
 			fmt.Println("Could not create application.")
 		}
@@ -121,8 +140,23 @@ func Patch(cmd *cli.Cmd) {
 		Desc: "Port",
 	})
 
+	file := cmd.String(cli.StringOpt{
+		Name: "f file",
+		Desc: "Environment variables file",
+	})
+
 	cmd.Action = func() {
-		resp, body, errs := application.Patch(*uuid, *name, *image, *enVars, *rules, *ports)
+		var eVars []string
+
+		fmt.Println(*file)
+
+		if *file != "" {
+			eVars = readFile(*file)
+		} else {
+			eVars = *enVars
+		}
+
+		resp, body, errs := application.Patch(*uuid, *name, *image, eVars, *rules, *ports)
 		if errs != nil {
 			fmt.Println("Could not patch application.")
 		}
@@ -130,4 +164,24 @@ func Patch(cmd *cli.Cmd) {
 
 		utils.Pprint(body)
 	}
+}
+
+func readFile(file string) []string {
+	f, err := os.Open(file)
+	if err != nil {
+		panic(err)
+	}
+
+	defer f.Close()
+
+	x := make([]string, 0)
+
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		x = append(x, scanner.Text())
+	}
+
+	fmt.Println(x)
+
+	return x
 }
