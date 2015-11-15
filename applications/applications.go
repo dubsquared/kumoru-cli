@@ -12,8 +12,9 @@ import (
 
 func Delete(cmd *cli.Cmd) {
 	uuid := cmd.String(cli.StringArg{
-		Name: "UUID",
-		Desc: "Application UUID",
+		Name:      "UUID",
+		Desc:      "Application UUID",
+		HideValue: true,
 	})
 
 	cmd.Action = func() {
@@ -41,8 +42,9 @@ func List(cmd *cli.Cmd) {
 
 func Show(cmd *cli.Cmd) {
 	uuid := cmd.String(cli.StringArg{
-		Name: "UUID",
-		Desc: "Application UUID",
+		Name:      "UUID",
+		Desc:      "Application UUID",
+		HideValue: true,
 	})
 
 	cmd.Action = func() {
@@ -58,33 +60,39 @@ func Show(cmd *cli.Cmd) {
 
 func Create(cmd *cli.Cmd) {
 	image := cmd.String(cli.StringArg{
-		Name: "IMG_URL",
-		Desc: "Image URL",
+		Name:      "IMG_URL",
+		Desc:      "Image URL",
+		HideValue: true,
 	})
 
 	name := cmd.String(cli.StringArg{
-		Name: "APP_NAME",
-		Desc: "Application Name",
+		Name:      "APP_NAME",
+		Desc:      "Application Name",
+		HideValue: true,
 	})
 
 	enVars := cmd.Strings(cli.StringsOpt{
-		Name: "e env",
-		Desc: "Environment variable",
+		Name:      "e env",
+		Desc:      "Environment variable",
+		HideValue: true,
 	})
 
 	rules := cmd.Strings(cli.StringsOpt{
-		Name: "r rule",
-		Desc: "Application Deployment rules",
+		Name:      "r rule",
+		Desc:      "Application Deployment rules",
+		HideValue: true,
 	})
 
 	ports := cmd.Strings(cli.StringsOpt{
-		Name: "p port",
-		Desc: "Port",
+		Name:      "p port",
+		Desc:      "Port",
+		HideValue: true,
 	})
 
 	file := cmd.String(cli.StringOpt{
-		Name: "f file",
-		Desc: "Environment variables file",
+		Name:      "f file",
+		Desc:      "Environment variables file",
+		HideValue: true,
 	})
 
 	cmd.Action = func() {
@@ -112,37 +120,44 @@ func Create(cmd *cli.Cmd) {
 
 func Patch(cmd *cli.Cmd) {
 	uuid := cmd.String(cli.StringArg{
-		Name: "UUID",
-		Desc: "Application UUID",
+		Name:      "UUID",
+		Desc:      "Application UUID",
+		HideValue: true,
 	})
 	image := cmd.String(cli.StringOpt{
-		Name: "IMG_URL",
-		Desc: "Image URL",
+		Name:      "IMG_URL",
+		Desc:      "Image URL",
+		HideValue: true,
 	})
 
 	name := cmd.String(cli.StringOpt{
-		Name: "APP_NAME",
-		Desc: "Application Name",
+		Name:      "APP_NAME",
+		Desc:      "Application Name",
+		HideValue: true,
 	})
 
 	enVars := cmd.Strings(cli.StringsOpt{
-		Name: "e env",
-		Desc: "Environment variable",
+		Name:      "e env",
+		Desc:      "Environment variable",
+		HideValue: true,
 	})
 
 	rules := cmd.Strings(cli.StringsOpt{
-		Name: "r rule",
-		Desc: "Application Deployment rules",
+		Name:      "r rule",
+		Desc:      "Application Deployment rules",
+		HideValue: true,
 	})
 
 	ports := cmd.Strings(cli.StringsOpt{
-		Name: "p port",
-		Desc: "Port",
+		Name:      "p port",
+		Desc:      "Port",
+		HideValue: true,
 	})
 
 	file := cmd.String(cli.StringOpt{
-		Name: "f file",
-		Desc: "Environment variables file",
+		Name:      "f file",
+		Desc:      "Environment variables file",
+		HideValue: true,
 	})
 
 	cmd.Action = func() {

@@ -11,23 +11,27 @@ import (
 func Create(cmd *cli.Cmd) {
 
 	user := cmd.String(cli.StringArg{
-		Name: "USER",
-		Desc: "Username",
+		Name:      "USER",
+		Desc:      "Username",
+		HideValue: true,
 	})
 
 	fName := cmd.String(cli.StringOpt{
-		Name: "f first-name",
-		Desc: "Given Name",
+		Name:      "f first-name",
+		Desc:      "Given Name",
+		HideValue: true,
 	})
 
 	lName := cmd.String(cli.StringOpt{
-		Name: "l last-name",
-		Desc: "Last Name",
+		Name:      "l last-name",
+		Desc:      "Last Name",
+		HideValue: true,
 	})
 
 	password := cmd.String(cli.StringOpt{
-		Name: "p password",
-		Desc: "Password",
+		Name:      "p password",
+		Desc:      "Password",
+		HideValue: true,
 	})
 
 	cmd.Action = func() {
@@ -56,8 +60,9 @@ func Create(cmd *cli.Cmd) {
 func Show(cmd *cli.Cmd) {
 
 	user := cmd.String(cli.StringArg{
-		Name: "USER",
-		Desc: "Username",
+		Name:      "USER",
+		Desc:      "Username",
+		HideValue: true,
 	})
 
 	cmd.Action = func() {

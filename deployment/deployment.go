@@ -10,8 +10,9 @@ import (
 
 func Deploy(cmd *cli.Cmd) {
 	uuid := cmd.String(cli.StringArg{
-		Name: "UUID",
-		Desc: "Application UUID",
+		Name:      "UUID",
+		Desc:      "Application UUID",
+		HideValue: true,
 	})
 
 	cmd.Command("deploy", "Create deployments", func(app *cli.Cmd) {
