@@ -12,14 +12,16 @@ import (
 func Create(cmd *cli.Cmd) {
 
 	location := cmd.String(cli.StringOpt{
-		Name:   "l location",
-		Desc:   "location of pool to be created",
-		EnvVar: "KUMORU_POOL_LOCATION",
+		Name:      "l location",
+		Desc:      "location of pool to be created",
+		EnvVar:    "KUMORU_POOL_LOCATION",
+		HideValue: true,
 	})
 
 	credentials := cmd.String(cli.StringOpt{
-		Name: "c provider-credentials",
-		Desc: "Credentials of the cloud provider to be used (i.e. access_key:secret_key@aws)",
+		Name:      "c provider-credentials",
+		Desc:      "Credentials of the cloud provider to be used (i.e. access_key:secret_key@aws)",
+		HideValue: true,
 	})
 
 	cmd.Action = func() {
@@ -66,8 +68,9 @@ func Show(cmd *cli.Cmd) {
 
 func Delete(cmd *cli.Cmd) {
 	uuid := cmd.String(cli.StringArg{
-		Name: "UUID",
-		Desc: "POOL UUID",
+		Name:      "UUID",
+		Desc:      "POOL UUID",
+		HideValue: true,
 	})
 
 	cmd.Action = func() {
