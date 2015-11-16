@@ -59,6 +59,11 @@ func Show(cmd *cli.Cmd) {
 }
 
 func Create(cmd *cli.Cmd) {
+	poolUuid := cmd.String(cli.StringArg{
+		Name: "POOL_UUID",
+		Desc: "UUID of pool to create application in",
+	})
+
 	image := cmd.String(cli.StringArg{
 		Name:      "IMG_URL",
 		Desc:      "Image URL",
@@ -68,6 +73,12 @@ func Create(cmd *cli.Cmd) {
 	name := cmd.String(cli.StringArg{
 		Name:      "APP_NAME",
 		Desc:      "Application Name",
+		HideValue: true,
+	})
+
+	providerCredentials := cmd.String(cli.StringOpt{
+		Name:      "c provider_credentials",
+		Desc:      "Credentials to be used for management of application specific cloud resources (i.e. LoadBalancer, etc)",
 		HideValue: true,
 	})
 
@@ -108,7 +119,7 @@ func Create(cmd *cli.Cmd) {
 		}
 
 		fmt.Println(eVars)
-		resp, body, errs := application.Create(*name, *image, eVars, *rules, *ports)
+		resp, body, errs := application.Create(*poolUuid, *name, *image, *providerCredentials, eVars, *rules, *ports)
 		if errs != nil {
 			fmt.Println("Could not create application.")
 		}
@@ -124,6 +135,7 @@ func Patch(cmd *cli.Cmd) {
 		Desc:      "Application UUID",
 		HideValue: true,
 	})
+
 	image := cmd.String(cli.StringOpt{
 		Name:      "IMG_URL",
 		Desc:      "Image URL",
@@ -133,6 +145,12 @@ func Patch(cmd *cli.Cmd) {
 	name := cmd.String(cli.StringOpt{
 		Name:      "APP_NAME",
 		Desc:      "Application Name",
+		HideValue: true,
+	})
+
+	providerCredentials := cmd.String(cli.StringOpt{
+		Name:      "c provider_credentials",
+		Desc:      "Credentials to be used for management of application specific cloud resources (i.e. LoadBalancer, etc)",
 		HideValue: true,
 	})
 
@@ -171,7 +189,7 @@ func Patch(cmd *cli.Cmd) {
 			eVars = *enVars
 		}
 
-		resp, body, errs := application.Patch(*uuid, *name, *image, eVars, *rules, *ports)
+		resp, body, errs := application.Patch(*uuid, *name, *image, *providerCredentials, eVars, *rules, *ports)
 		if errs != nil {
 			fmt.Println("Could not patch application.")
 		}
