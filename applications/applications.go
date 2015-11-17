@@ -2,8 +2,10 @@ package applications
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/jawher/mow.cli"
 	"github.com/kumoru/kumoru-sdk-go/kumoru/utils"
@@ -22,8 +24,8 @@ func Delete(cmd *cli.Cmd) {
 		if errs != nil {
 			fmt.Println("Could not delete application.")
 		}
-		fmt.Println(resp.StatusCode)
 
+		fmt.Println(resp.StatusCode)
 		utils.Pprint(body)
 	}
 }
@@ -34,8 +36,8 @@ func List(cmd *cli.Cmd) {
 		if errs != nil {
 			fmt.Println("Could not retrieve application information.")
 		}
-		fmt.Println(resp.Status)
-		fmt.Println(resp)
+
+		fmt.Println(resp.StatusCode)
 		utils.Pprint(body)
 	}
 }
@@ -52,8 +54,8 @@ func Show(cmd *cli.Cmd) {
 		if errs != nil {
 			fmt.Println("Could not retrieve application information.")
 		}
-		fmt.Println(resp.StatusCode)
 
+		fmt.Println(resp.StatusCode)
 		utils.Pprint(body)
 	}
 }
@@ -100,6 +102,18 @@ func Create(cmd *cli.Cmd) {
 		HideValue: true,
 	})
 
+	tags := cmd.Strings(cli.StringsOpt{
+		Name:      "t tags",
+		Desc:      "Tags associated with the aplication being created",
+		HideValue: true,
+	})
+
+	meta := cmd.Strings(cli.StringsOpt{
+		Name:      "m metadata",
+		Desc:      "Metadata associated with the application being created (i.e. location=cloud)",
+		HideValue: true,
+	})
+
 	file := cmd.String(cli.StringOpt{
 		Name:      "f file",
 		Desc:      "Environment variables file",
@@ -118,13 +132,14 @@ func Create(cmd *cli.Cmd) {
 			eVars = *enVars
 		}
 
-		fmt.Println(eVars)
-		resp, body, errs := application.Create(*poolUuid, *name, *image, *providerCredentials, eVars, *rules, *ports)
+		mData := metaData(*meta, *tags)
+
+		resp, body, errs := application.Create(*poolUuid, *name, *image, *providerCredentials, mData, eVars, *rules, *ports)
 		if errs != nil {
 			fmt.Println("Could not create application.")
 		}
-		fmt.Println(resp.StatusCode)
 
+		fmt.Println(resp.StatusCode)
 		utils.Pprint(body)
 	}
 }
@@ -172,6 +187,18 @@ func Patch(cmd *cli.Cmd) {
 		HideValue: true,
 	})
 
+	tags := cmd.Strings(cli.StringsOpt{
+		Name:      "t tags",
+		Desc:      "Tags associated with the aplication being created",
+		HideValue: true,
+	})
+
+	meta := cmd.Strings(cli.StringsOpt{
+		Name:      "m metadata",
+		Desc:      "Metadata associated with the application being created (i.e. location=cloud)",
+		HideValue: true,
+	})
+
 	file := cmd.String(cli.StringOpt{
 		Name:      "f file",
 		Desc:      "Environment variables file",
@@ -189,12 +216,14 @@ func Patch(cmd *cli.Cmd) {
 			eVars = *enVars
 		}
 
-		resp, body, errs := application.Patch(*uuid, *name, *image, *providerCredentials, eVars, *rules, *ports)
+		mData := metaData(*meta, *tags)
+
+		resp, body, errs := application.Patch(*uuid, *name, *image, *providerCredentials, mData, eVars, *rules, *ports)
 		if errs != nil {
 			fmt.Println("Could not patch application.")
 		}
-		fmt.Println(resp.StatusCode)
 
+		fmt.Println(resp.StatusCode)
 		utils.Pprint(body)
 	}
 }
@@ -217,4 +246,28 @@ func readFile(file string) []string {
 	fmt.Println(x)
 
 	return x
+}
+
+func metaData(meta, tags []string) string {
+	var mdata string
+
+	if len(meta) > 0 {
+
+		for _, data := range meta {
+			e := strings.Split(data, "=")
+			mdata += fmt.Sprintf("\"%s\":\"%s\",", e[0], e[1])
+		}
+	}
+
+	if len(tags) > 0 {
+		t, _ := json.Marshal(tags)
+		mdata += fmt.Sprintf("\"tags\": %s", t)
+	}
+
+	if mdata == "" {
+		return ""
+	}
+
+	return fmt.Sprintf("{%s}\n", mdata)
+
 }

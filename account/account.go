@@ -44,14 +44,14 @@ func Create(cmd *cli.Cmd) {
 		switch resp.StatusCode {
 		case 200:
 			fmt.Println("Account created successfully")
-			fmt.Println(resp.Status)
+			fmt.Println(resp.StatusCode)
 			utils.Pprint(body)
 		case 409:
 			fmt.Println("Account already exists.")
-			fmt.Println(resp.Status)
+			fmt.Println(resp.StatusCode)
 			utils.Pprint(body)
 		default:
-			fmt.Println(resp.Status)
+			fmt.Println(resp.StatusCode)
 			utils.Pprint(body)
 		}
 	}
@@ -74,9 +74,10 @@ func Show(cmd *cli.Cmd) {
 		switch resp.StatusCode {
 		case 200:
 			fmt.Println("Account created successfully")
+			fmt.Println(resp.StatusCode)
 			utils.Pprint(body)
 		default:
-			fmt.Println(resp.Status)
+			fmt.Println(resp.StatusCode)
 			utils.Pprint(body)
 		}
 

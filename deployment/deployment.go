@@ -22,8 +22,7 @@ func Deploy(cmd *cli.Cmd) {
 				fmt.Println("Could not retrieve a list of applications.")
 			}
 
-			fmt.Println(resp.Status)
-
+			fmt.Println(resp.StatusCode)
 			utils.Pprint(body)
 		}
 	})

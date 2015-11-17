@@ -36,8 +36,7 @@ func Create(cmd *cli.Cmd) {
 			fmt.Println("Could not create a new pool.")
 		}
 
-		fmt.Println(resp.Status)
-
+		fmt.Println(resp.StatusCode)
 		utils.Pprint(body)
 	}
 }
@@ -54,6 +53,7 @@ func List(cmd *cli.Cmd) {
 			fmt.Println(resp.Status)
 		}
 
+		fmt.Println(resp.StatusCode)
 		utils.Pprint(body)
 	}
 }
@@ -84,6 +84,7 @@ func Delete(cmd *cli.Cmd) {
 			fmt.Println(resp.Status)
 		}
 
+		fmt.Println(resp.StatusCode)
 		utils.Pprint(body)
 	}
 }
