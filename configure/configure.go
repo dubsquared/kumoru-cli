@@ -120,16 +120,16 @@ func endpoints() (string, string, string) {
 		auth = "http://authorization.api.kumoru.io:5000"
 	}
 
-	fmt.Print("Enter Application endpoint [http://application.api.kumoru.io]:")
+	fmt.Print("Enter Application endpoint [http://application.api.kumoru.io:5000]:")
 	apps, _ := reader.ReadString('\n')
 	if apps == "\n" {
-		apps = "http://authorization.api.kumoru.io"
+		apps = "http://application.api.kumoru.io:5000"
 	}
 
 	fmt.Print("Enter Pool endpoint [http://pool.api.kumoru.io:5000]:")
 	pool, _ := reader.ReadString('\n')
 	if pool == "\n" {
-		pool = "http://authorization.api.kumoru.io:5000"
+		pool = "http://pool.api.kumoru.io:5000"
 	}
 
 	return strings.TrimSpace(auth), strings.TrimSpace(pool), strings.TrimSpace(apps)
