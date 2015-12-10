@@ -4,6 +4,8 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
+	log "github.com/Sirupsen/logrus"
+	"io/ioutil"
 	"os"
 	"strings"
 
@@ -11,6 +13,12 @@ import (
 	"github.com/kumoru/kumoru-sdk-go/kumoru/utils"
 	"github.com/kumoru/kumoru-sdk-go/service/application"
 )
+
+type Certificates struct {
+	Certificate      string `json:"certificate,omitempty"`
+	PrivateKey       string `json:"private_key,omitempty"`
+	CertificateChain string `json:"certificate_chain,omitempty"`
+}
 
 func Delete(cmd *cli.Cmd) {
 	uuid := cmd.String(cli.StringArg{
@@ -78,6 +86,24 @@ func Create(cmd *cli.Cmd) {
 		HideValue: true,
 	})
 
+	certificate := cmd.String(cli.StringOpt{
+		Name:      "certificate_file",
+		Desc:      "File(PEM encoded) containing the SSL certificate associated with the application",
+		HideValue: true,
+	})
+
+	privateKey := cmd.String(cli.StringOpt{
+		Name:      "private_key_file",
+		Desc:      "File(PEM encoded) containing the SSL key associated with the public certificate (required if providing a certificate)",
+		HideValue: true,
+	})
+
+	certificateChain := cmd.String(cli.StringOpt{
+		Name:      "certificate_chain_file",
+		Desc:      "File(PEM encoded) contianing the certificate chain associated with the public certificate (optional)",
+		HideValue: true,
+	})
+
 	providerCredentials := cmd.String(cli.StringOpt{
 		Name:      "c provider_credentials",
 		Desc:      "Credentials to be used for management of application specific cloud resources (i.e. LoadBalancer, etc)",
@@ -127,14 +153,16 @@ func Create(cmd *cli.Cmd) {
 		fmt.Println(*file)
 
 		if *file != "" {
-			eVars = readFile(*file)
+			eVars = readEnvFile(*file)
 		} else {
 			eVars = *enVars
 		}
 
 		mData := metaData(*meta, *tags)
 
-		resp, body, errs := application.Create(*poolUuid, *name, *image, *providerCredentials, mData, eVars, *rules, *ports)
+		credentials := readCredentials(certificate, privateKey, certificateChain)
+
+		resp, body, errs := application.Create(*poolUuid, credentials, *name, *image, *providerCredentials, mData, eVars, *rules, *ports)
 		if errs != nil {
 			fmt.Println("Could not create application.")
 		}
@@ -163,6 +191,24 @@ func Patch(cmd *cli.Cmd) {
 		HideValue: true,
 	})
 
+	certificate := cmd.String(cli.StringOpt{
+		Name:      "certificate_file",
+		Desc:      "File(PEM encoded) containing the SSL certificate associated with the application",
+		HideValue: true,
+	})
+
+	privateKey := cmd.String(cli.StringOpt{
+		Name:      "private_key_file",
+		Desc:      "File(PEM encoded) containing the SSL key associated with the public certificate (required if providing a certificate)",
+		HideValue: true,
+	})
+
+	certificateChain := cmd.String(cli.StringOpt{
+		Name:      "certificate_chain_file",
+		Desc:      "File(PEM encoded) contianing the certificate chain associated with the public certificate (optional)",
+		HideValue: true,
+	})
+
 	providerCredentials := cmd.String(cli.StringOpt{
 		Name:      "c provider_credentials",
 		Desc:      "Credentials to be used for management of application specific cloud resources (i.e. LoadBalancer, etc)",
@@ -211,14 +257,16 @@ func Patch(cmd *cli.Cmd) {
 		fmt.Println(*file)
 
 		if *file != "" {
-			eVars = readFile(*file)
+			eVars = readEnvFile(*file)
 		} else {
 			eVars = *enVars
 		}
 
 		mData := metaData(*meta, *tags)
 
-		resp, body, errs := application.Patch(*uuid, *name, *image, *providerCredentials, mData, eVars, *rules, *ports)
+		credentials := readCredentials(certificate, privateKey, certificateChain)
+
+		resp, body, errs := application.Patch(*uuid, credentials, *name, *image, *providerCredentials, mData, eVars, *rules, *ports)
 		if errs != nil {
 			fmt.Println("Could not patch application.")
 		}
@@ -228,7 +276,43 @@ func Patch(cmd *cli.Cmd) {
 	}
 }
 
-func readFile(file string) []string {
+func readCredentials(certificate, privateKey, certificateChain *string) string {
+	var certificates Certificates
+
+	if *certificate != "" {
+		cert, err := ioutil.ReadFile(*certificate)
+		if err != nil {
+			log.Fatal(err)
+		}
+		certificates.Certificate = string(cert)
+	}
+
+	if *privateKey != "" {
+		key, err := ioutil.ReadFile(*privateKey)
+		if err != nil {
+			log.Fatal(err)
+		}
+		certificates.PrivateKey = string(key)
+	}
+
+	if *certificateChain != "" {
+		chain, err := ioutil.ReadFile(*certificateChain)
+		if err != nil {
+			log.Fatal(err)
+		}
+		certificates.CertificateChain = string(chain)
+	}
+
+	c, err := json.Marshal(certificates)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return string(c)
+}
+
+func readEnvFile(file string) []string {
 	f, err := os.Open(file)
 	if err != nil {
 		panic(err)

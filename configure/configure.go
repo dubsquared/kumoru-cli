@@ -114,22 +114,22 @@ func credentials() (string, string) {
 func endpoints() (string, string, string) {
 	reader := bufio.NewReader(os.Stdin)
 
-	fmt.Print("\nEnter Authorization endpoint [http://authorization.api.kumoru.io:5000]:")
+	fmt.Print("\nEnter Authorization endpoint [https://authorization.kumoru.io:5000]:")
 	auth, _ := reader.ReadString('\n')
 	if auth == "\n" {
-		auth = "http://authorization.api.kumoru.io:5000"
+		auth = "https://authorization.kumoru.io:5000"
 	}
 
-	fmt.Print("Enter Application endpoint [http://application.api.kumoru.io:5000]:")
+	fmt.Print("Enter Application endpoint [https://application.kumoru.io:5000]:")
 	apps, _ := reader.ReadString('\n')
 	if apps == "\n" {
-		apps = "http://application.api.kumoru.io:5000"
+		apps = "https://application.kumoru.io:5000"
 	}
 
-	fmt.Print("Enter Pool endpoint [http://pool.api.kumoru.io:5000]:")
+	fmt.Print("Enter Pool endpoint [https://pool.kumoru.io:5000]:")
 	pool, _ := reader.ReadString('\n')
 	if pool == "\n" {
-		pool = "http://pool.api.kumoru.io:5000"
+		pool = "https://pool.kumoru.io:5000"
 	}
 
 	return strings.TrimSpace(auth), strings.TrimSpace(pool), strings.TrimSpace(apps)
