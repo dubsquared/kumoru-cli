@@ -13,8 +13,16 @@
 			"Rev": "4643a7efec9b8fd7548882e7b30095711343100f"
 		},
 		{
+			"ImportPath": "github.com/fatih/structs",
+			"Rev": "9a7733345ff091c5457cb963f498a79ecd0bdbaa"
+		},
+		{
 			"ImportPath": "github.com/jawher/mow.cli",
 			"Rev": "ec353aa1195a385f193bd2e681d26f739b584b6e"
+		},
+		{
+			"ImportPath": "github.com/kumoru/kumoru-sdk-go/RootCAs",
+			"Rev": "f7204d77a6c174257039e2f701042d8061e0ef46"
 		},
 		{
 			"ImportPath": "github.com/kumoru/kumoru-sdk-go/kumoru",
@@ -31,6 +39,11 @@
 		{
 			"ImportPath": "github.com/kumoru/kumoru-sdk-go/service/pools",
 			"Rev": "f7204d77a6c174257039e2f701042d8061e0ef46"
+		},
+		{
+			"ImportPath": "github.com/ryanuber/columnize",
+			"Comment": "v2.0.1-8-g983d3a5",
+			"Rev": "983d3a5fab1bf04d1b412465d2d9f8430e2e917e"
 		},
 		{
 			"ImportPath": "github.com/vaughan0/go-ini",
