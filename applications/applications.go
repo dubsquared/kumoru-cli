@@ -9,10 +9,35 @@ import (
 	"os"
 	"strings"
 
+	"github.com/fatih/structs"
 	"github.com/jawher/mow.cli"
 	"github.com/kumoru/kumoru-sdk-go/kumoru/utils"
 	"github.com/kumoru/kumoru-sdk-go/service/application"
+	"github.com/ryanuber/columnize"
 )
+
+type App struct {
+	Addresses           []string            `json:"addresses"`
+	CreatedAt           string              `json:"created_at"`
+	CurrentDeployments  map[string]string   `json:"current_deployments"`
+	Environment         map[string]string   `json:"environment"`
+	Hash                string              `json:"hash"`
+	ImageUrl            string              `json:"image_url"`
+	Location            string              `json:"pool_location"`
+	LogToken            string              `json:"log_token"`
+	Metadata            map[string][]string `json:"metadata"`
+	OrchestrationUrl    string              `json:"orchestration_url"`
+	Name                string              `json:"name"`
+	PoolUuid            string              `json:"pool_uuid"`
+	Ports               []string            `json:"ports"`
+	ProviderCredentials string              `json:"provider_credentials"`
+	Rules               map[string]int      `json:"rules"`
+	Status              string              `json:"status"`
+	UpdatedAt           string              `json:"updated_at"`
+	Url                 string              `json:"url"`
+	Uuid                string              `json:"uuid"`
+	Certificates        map[string]string   `json:"certificates"`
+}
 
 type Certificates struct {
 	Certificate      string `json:"certificate,omitempty"`
@@ -29,6 +54,7 @@ func Delete(cmd *cli.Cmd) {
 
 	cmd.Action = func() {
 		resp, body, errs := application.Delete(*uuid)
+
 		if errs != nil {
 			fmt.Println("Could not delete application.")
 		}
@@ -39,14 +65,26 @@ func Delete(cmd *cli.Cmd) {
 }
 
 func List(cmd *cli.Cmd) {
+	var a []App
+
 	cmd.Action = func() {
 		resp, body, errs := application.List()
+
 		if errs != nil {
-			fmt.Println("Could not retrieve application information.")
+			log.Fatalf("Could not retrieve applications: %s", errs)
 		}
 
-		fmt.Println(resp.StatusCode)
-		utils.Pprint(body)
+		if resp.StatusCode != 200 {
+			log.Fatalf("Could not retrieve applications: %s", resp.Status)
+		}
+
+		err := json.Unmarshal([]byte(body), &a)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		printAppBrief(a)
 	}
 }
 
@@ -57,14 +95,27 @@ func Show(cmd *cli.Cmd) {
 		HideValue: true,
 	})
 
+	var a App
+
 	cmd.Action = func() {
 		resp, body, errs := application.Show(*uuid)
+
 		if errs != nil {
-			fmt.Println("Could not retrieve application information.")
+			log.Fatalf("Could not retrieve application: %s", errs)
 		}
 
-		fmt.Println(resp.StatusCode)
-		utils.Pprint(body)
+		if resp.StatusCode != 200 {
+			log.Fatalf("Could not retrieve application: %s", resp.Status)
+		}
+
+		err := json.Unmarshal([]byte(body), &a)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		printAppBrief([]App{a})
+		printAppDetail(a)
 	}
 }
 
@@ -147,7 +198,7 @@ func Create(cmd *cli.Cmd) {
 	})
 
 	cmd.Action = func() {
-
+		var a App
 		var eVars []string
 
 		fmt.Println(*file)
@@ -164,11 +215,21 @@ func Create(cmd *cli.Cmd) {
 
 		resp, body, errs := application.Create(*poolUuid, credentials, *name, *image, *providerCredentials, mData, eVars, *rules, *ports)
 		if errs != nil {
-			fmt.Println("Could not create application.")
+			log.Fatalf("Could not create application: %s", errs)
 		}
 
-		fmt.Println(resp.StatusCode)
-		utils.Pprint(body)
+		if resp.StatusCode != 201 {
+			log.Fatalf("Could not create application: %s", resp.Status)
+		}
+
+		err := json.Unmarshal([]byte(body), &a)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		printAppBrief([]App{a})
+		printAppDetail(a)
 	}
 }
 
@@ -276,6 +337,30 @@ func Patch(cmd *cli.Cmd) {
 	}
 }
 
+func metaData(meta, tags []string) string {
+	var mdata string
+
+	if len(meta) > 0 {
+
+		for _, data := range meta {
+			e := strings.Split(data, "=")
+			mdata += fmt.Sprintf("\"%s\":\"%s\",", e[0], e[1])
+		}
+	}
+
+	if len(tags) > 0 {
+		t, _ := json.Marshal(tags)
+		mdata += fmt.Sprintf("\"tags\": %s", t)
+	}
+
+	if mdata == "" {
+		return ""
+	}
+
+	return fmt.Sprintf("{%s}\n", mdata)
+
+}
+
 func readCredentials(certificate, privateKey, certificateChain *string) string {
 	var certificates Certificates
 
@@ -332,26 +417,26 @@ func readEnvFile(file string) []string {
 	return x
 }
 
-func metaData(meta, tags []string) string {
-	var mdata string
+func printAppBrief(a []App) {
+	var output []string
 
-	if len(meta) > 0 {
-
-		for _, data := range meta {
-			e := strings.Split(data, "=")
-			mdata += fmt.Sprintf("\"%s\":\"%s\",", e[0], e[1])
-		}
+	output = append(output, fmt.Sprintf("Name | Uuid | Status | Location | Ports"))
+	for i := 0; i < len(a); i++ {
+		output = append(output, fmt.Sprintf("%s | %s | %s | %s | %s", a[i].Name, a[i].Uuid, a[i].Status, a[i].Location, a[i].Ports))
 	}
 
-	if len(tags) > 0 {
-		t, _ := json.Marshal(tags)
-		mdata += fmt.Sprintf("\"tags\": %s", t)
+	fmt.Println(columnize.SimpleFormat(output))
+}
+
+func printAppDetail(a App) {
+	var output []string
+	fields := structs.New(a).Fields()
+
+	fmt.Println("\nApplication Details:\n")
+
+	for _, f := range fields {
+		output = append(output, fmt.Sprintf("%v: |%v\n", f.Name(), f.Value()))
 	}
 
-	if mdata == "" {
-		return ""
-	}
-
-	return fmt.Sprintf("{%s}\n", mdata)
-
+	fmt.Println(columnize.SimpleFormat(output))
 }
