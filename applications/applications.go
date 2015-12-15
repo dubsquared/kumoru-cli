@@ -213,9 +213,9 @@ func Create(cmd *cli.Cmd) {
 
 		mData := metaData(*meta, *tags)
 
-		credentials := readCredentials(certificate, privateKey, certificateChain)
+		certificates := readCertificates(certificate, privateKey, certificateChain)
 
-		resp, body, errs := application.Create(*poolUuid, credentials, *name, *image, *providerCredentials, mData, eVars, *rules, *ports)
+		resp, body, errs := application.Create(*poolUuid, certificates, *name, *image, *providerCredentials, mData, eVars, *rules, *ports)
 		if errs != nil {
 			log.Fatalf("Could not create application: %s", errs)
 		}
@@ -328,9 +328,9 @@ func Patch(cmd *cli.Cmd) {
 
 		mData := metaData(*meta, *tags)
 
-		credentials := readCredentials(certificate, privateKey, certificateChain)
+		certificates := readCertificates(certificate, privateKey, certificateChain)
 
-		resp, body, errs := application.Patch(*uuid, credentials, *name, *image, *providerCredentials, mData, eVars, *rules, *ports)
+		resp, body, errs := application.Patch(*uuid, certificates, *name, *image, *providerCredentials, mData, eVars, *rules, *ports)
 		if errs != nil {
 			log.Fatalf("Could not patch application: %s", errs)
 		}
@@ -412,7 +412,7 @@ func printAppDetail(a App) {
 	fmt.Println(columnize.SimpleFormat(output))
 }
 
-func readCredentials(certificate, privateKey, certificateChain *string) string {
+func readCertificates(certificate, privateKey, certificateChain *string) string {
 	var certificates Certificates
 
 	if *certificate != "" {
@@ -443,6 +443,10 @@ func readCredentials(certificate, privateKey, certificateChain *string) string {
 
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	if string(c) == "{}" {
+		c = []byte("")
 	}
 
 	return string(c)
