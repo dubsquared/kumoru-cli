@@ -11,7 +11,6 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/jawher/mow.cli"
-	"github.com/kumoru/kumoru-sdk-go/kumoru/utils"
 	"github.com/kumoru/kumoru-sdk-go/service/application"
 	"github.com/ryanuber/columnize"
 )
@@ -316,6 +315,7 @@ func Patch(cmd *cli.Cmd) {
 	})
 
 	cmd.Action = func() {
+		var a App
 		var eVars []string
 
 		fmt.Println(*file)
@@ -332,12 +332,31 @@ func Patch(cmd *cli.Cmd) {
 
 		resp, body, errs := application.Patch(*uuid, credentials, *name, *image, *providerCredentials, mData, eVars, *rules, *ports)
 		if errs != nil {
-			fmt.Println("Could not patch application.")
+			log.Fatalf("Could not patch application: %s", errs)
 		}
 
-		fmt.Println(resp.StatusCode)
-		utils.Pprint(body)
+		if resp.StatusCode != 200 {
+			log.Fatalf("Could not patch application: %s", resp.Status)
+		}
+
+		err := json.Unmarshal([]byte(body), &a)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		printAppDetail(a)
 	}
+}
+
+func fmtRules(rules map[string]int) string {
+	var r string
+
+	for k, v := range rules {
+		r = fmt.Sprintf("%s=%v ", k, v)
+	}
+
+	return r
 }
 
 func metaData(meta, tags []string) string {
@@ -362,6 +381,35 @@ func metaData(meta, tags []string) string {
 
 	return fmt.Sprintf("{%s}\n", mdata)
 
+}
+
+func printAppBrief(a []App) {
+	var output []string
+
+	output = append(output, fmt.Sprintf("Name | Uuid | Status | Location | Ports | Rules"))
+
+	for i := 0; i < len(a); i++ {
+		output = append(output, fmt.Sprintf("%s | %s | %s | %s | %s | %s", a[i].Name, a[i].Uuid, a[i].Status, a[i].Location, a[i].Ports, fmtRules(a[i].Rules)))
+	}
+
+	fmt.Println(columnize.SimpleFormat(output))
+}
+
+func printAppDetail(a App) {
+	var output []string
+	fields := structs.New(a).Fields()
+
+	fmt.Println("\nApplication Details:\n")
+
+	for _, f := range fields {
+		if f.Name() == "Rules" {
+			output = append(output, fmt.Sprintf("%s: |%v\n", f.Name(), fmtRules(a.Rules)))
+		} else {
+			output = append(output, fmt.Sprintf("%s: |%v\n", f.Name(), f.Value()))
+		}
+	}
+
+	fmt.Println(columnize.SimpleFormat(output))
 }
 
 func readCredentials(certificate, privateKey, certificateChain *string) string {
@@ -418,28 +466,4 @@ func readEnvFile(file string) []string {
 	fmt.Println(x)
 
 	return x
-}
-
-func printAppBrief(a []App) {
-	var output []string
-
-	output = append(output, fmt.Sprintf("Name | Uuid | Status | Location | Ports"))
-	for i := 0; i < len(a); i++ {
-		output = append(output, fmt.Sprintf("%s | %s | %s | %s | %s", a[i].Name, a[i].Uuid, a[i].Status, a[i].Location, a[i].Ports))
-	}
-
-	fmt.Println(columnize.SimpleFormat(output))
-}
-
-func printAppDetail(a App) {
-	var output []string
-	fields := structs.New(a).Fields()
-
-	fmt.Println("\nApplication Details:\n")
-
-	for _, f := range fields {
-		output = append(output, fmt.Sprintf("%v: |%v\n", f.Name(), f.Value()))
-	}
-
-	fmt.Println(columnize.SimpleFormat(output))
 }
