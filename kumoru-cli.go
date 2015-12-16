@@ -6,13 +6,13 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/jawher/mow.cli"
 
-	"github.com/kumoru/kumoru-cli/account"
+	"github.com/kumoru/kumoru-cli/accounts"
 	"github.com/kumoru/kumoru-cli/applications"
 	"github.com/kumoru/kumoru-cli/configure"
-	"github.com/kumoru/kumoru-cli/deployment"
+	"github.com/kumoru/kumoru-cli/deployments"
 	"github.com/kumoru/kumoru-cli/pools"
 	"github.com/kumoru/kumoru-cli/secrets"
-	"github.com/kumoru/kumoru-cli/token"
+	"github.com/kumoru/kumoru-cli/tokens"
 )
 
 func init() {
@@ -26,37 +26,37 @@ func init() {
 func main() {
 	app := cli.App("kumoru", "Utility to interact with Kumoru services.")
 
-	app.Version("v version", "0.0.8")
+	app.Version("v version", "0.0.9")
 
-	app.Command("account", "Account actions", func(act *cli.Cmd) {
-		act.Command("create", "Create an account ", account.Create)
-		act.Command("show", "Show acount information", account.Show)
+	app.Command("accounts", "Account actions", func(act *cli.Cmd) {
+		act.Command("create", "Create an account ", accounts.Create)
+		act.Command("show", "Show account information", accounts.Show)
 	})
 
 	app.Command("applications", "Application actions", func(apps *cli.Cmd) {
-		apps.Command("create", "Create a new application", applications.Create)
+		apps.Command("create", "Create an application", applications.Create)
 		apps.Command("delete", "Delete an application", applications.Delete)
-		apps.Command("patch", "Show application information", applications.Patch)
-		apps.Command("list", "List availablable applications", applications.List)
+		apps.Command("patch", "Update an application", applications.Patch)
+		apps.Command("list", "List all applications", applications.List)
 		apps.Command("show", "Show application information", applications.Show)
 	})
 
-	app.Command("deployment", "test", deployment.Deploy)
+	app.Command("deployments", "test", deployments.Deploy)
 
-	app.Command("pool", "Pool actions", func(pool *cli.Cmd) {
-		pool.Command("create", "Create a new pool", pools.Create)
-		pool.Command("list", "List availablable pools", pools.List)
+	app.Command("pools", "Pool actions", func(pool *cli.Cmd) {
+		pool.Command("create", "Create a pool", pools.Create)
+		pool.Command("list", "List all pools", pools.List)
 		pool.Command("show", "Show pool information", pools.Show)
-		pool.Command("delete", "Show pool information", pools.Delete)
+		pool.Command("delete", "Delete information", pools.Delete)
 	})
 
 	app.Command("secrets", "secrets actions", func(sec *cli.Cmd) {
-		sec.Command("create", "Create deployments", secrets.Create)
-		sec.Command("show", "Show deployment", secrets.Show)
+		sec.Command("create", "Create secret", secrets.Create)
+		sec.Command("show", "Show secret information", secrets.Show)
 	})
 
 	app.Command("tokens", "Token actions", func(tkn *cli.Cmd) {
-		tkn.Command("create", "Create a new token, and get a secret", token.Create)
+		tkn.Command("create", "Create a pair of tokens", tokens.Create)
 	})
 
 	app.Command("configure", "Configure kumoru-cli client", configure.Cfgcli)

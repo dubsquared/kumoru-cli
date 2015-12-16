@@ -1,4 +1,4 @@
-package deployment
+package deployments
 
 import (
 	"fmt"
@@ -15,7 +15,7 @@ func Deploy(cmd *cli.Cmd) {
 		HideValue: true,
 	})
 
-	cmd.Command("deploy", "Create deployments", func(app *cli.Cmd) {
+	cmd.Command("deploy", "Create a deployment", func(app *cli.Cmd) {
 		app.Action = func() {
 			resp, body, errs := application.Deploy(*uuid)
 			if errs != nil {
@@ -26,7 +26,7 @@ func Deploy(cmd *cli.Cmd) {
 			utils.Pprint(body)
 		}
 	})
-	cmd.Command("show", "Create deployments", func(app *cli.Cmd) {
+	cmd.Command("show", "Show deployment deployment information", func(app *cli.Cmd) {
 		app.Action = func() {
 			fmt.Println("STUB: show deployment action")
 		}
