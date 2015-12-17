@@ -55,11 +55,11 @@ func Delete(cmd *cli.Cmd) {
 		resp, _, errs := application.Delete(*uuid)
 
 		if errs != nil {
-			log.Fatalf("Could not retrieve applications: %s", errs)
+			log.Fatalf("Could not delete applications: %s", errs)
 		}
 
 		if resp.StatusCode != 202 {
-			log.Fatalf("Could not retrieve applications: %s", resp.Status)
+			log.Fatalf("Could not delete applications: %s", resp.Status)
 		}
 
 		fmt.Sprintf("Application %s accepted for archival", uuid)
