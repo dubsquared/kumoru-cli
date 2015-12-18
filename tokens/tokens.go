@@ -1,15 +1,38 @@
 package tokens
 
 import (
+	"bufio"
 	"fmt"
+	"os"
+	"strings"
+
+	"golang.org/x/crypto/ssh/terminal"
 
 	"github.com/jawher/mow.cli"
 	"github.com/kumoru/kumoru-sdk-go/service/authorization"
 )
 
 func Create(cmd *cli.Cmd) {
+	force := cmd.Bool(cli.BoolOpt{
+		Name:      "force",
+		Desc:      "If a set of tokens already exist, overwrite them.",
+		Value:     false,
+		HideValue: true,
+	})
+
 	cmd.Action = func() {
-		token, resp, body, errs := authorization.GetTokens()
+		usrHome := os.Getenv("HOME")
+		file := usrHome + "/.kumoru/config"
+
+		fmt.Println("Force: ", *force)
+
+		if _, err := os.Stat(file); err == nil && *force == false {
+			fmt.Println(file, "configuration file already exists.")
+			fmt.Println("Please see help for additonal options.")
+			os.Exit(1)
+		}
+
+		token, resp, body, errs := authorization.GetTokens(credentials())
 
 		if errs != nil {
 			fmt.Println("Could not retrieve new tokens")
@@ -24,4 +47,24 @@ func Create(cmd *cli.Cmd) {
 		fmt.Printf("kumoru_token_private=%s\n", body)
 	}
 
+}
+
+func credentials() (string, string) {
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Print("\n\nGenerating new token.\n")
+
+	fmt.Print("Enter Username: ")
+	username, _ := reader.ReadString('\n')
+
+	fmt.Print("Enter Password: ")
+	bytePassword, err := terminal.ReadPassword(0)
+	if err != nil {
+		fmt.Println("\nCould Not read password.")
+		os.Exit(1)
+	}
+
+	fmt.Println("Please wait while we generate new tokesn.\n")
+
+	return strings.TrimSpace(username), strings.TrimSpace(string(bytePassword))
 }

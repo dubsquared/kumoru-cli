@@ -8,7 +8,6 @@ import (
 
 	"github.com/kumoru/kumoru-cli/accounts"
 	"github.com/kumoru/kumoru-cli/applications"
-	"github.com/kumoru/kumoru-cli/configure"
 	"github.com/kumoru/kumoru-cli/deployments"
 	"github.com/kumoru/kumoru-cli/pools"
 	"github.com/kumoru/kumoru-cli/secrets"
@@ -26,7 +25,7 @@ func init() {
 func main() {
 	app := cli.App("kumoru", "Utility to interact with Kumoru services.")
 
-	app.Version("v version", "0.0.9")
+	app.Version("v version", "0.0.10")
 
 	app.Command("accounts", "Account actions", func(act *cli.Cmd) {
 		act.Command("create", "Create an account ", accounts.Create)
@@ -58,8 +57,6 @@ func main() {
 	app.Command("tokens", "Token actions", func(tkn *cli.Cmd) {
 		tkn.Command("create", "Create a pair of tokens", tokens.Create)
 	})
-
-	app.Command("configure", "Configure kumoru-cli client", configure.Cfgcli)
 
 	app.Run(os.Args)
 }

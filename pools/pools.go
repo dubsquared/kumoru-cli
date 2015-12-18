@@ -3,6 +3,7 @@ package pools
 import (
 	"encoding/json"
 	"fmt"
+
 	log "github.com/Sirupsen/logrus"
 
 	"github.com/fatih/structs"
