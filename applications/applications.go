@@ -125,7 +125,7 @@ func Show(cmd *cli.Cmd) {
 func Deploy(cmd *cli.Cmd) {
 	uuid := cmd.String(cli.StringArg{
 		Name:      "UUID",
-		Desc:      "Deployment UUID",
+		Desc:      "Application UUID",
 		HideValue: true,
 	})
 

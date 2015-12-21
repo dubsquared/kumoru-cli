@@ -8,7 +8,6 @@ import (
 
 	"github.com/kumoru/kumoru-cli/accounts"
 	"github.com/kumoru/kumoru-cli/applications"
-	"github.com/kumoru/kumoru-cli/deployments"
 	"github.com/kumoru/kumoru-cli/pools"
 	"github.com/kumoru/kumoru-cli/secrets"
 	"github.com/kumoru/kumoru-cli/tokens"
@@ -40,8 +39,6 @@ func main() {
 		apps.Command("patch", "Update an application", applications.Patch)
 		apps.Command("show", "Show application information", applications.Show)
 	})
-
-	app.Command("deployments", "test", deployments.Deploy)
 
 	app.Command("pools", "Pool actions", func(pool *cli.Cmd) {
 		pool.Command("create", "Create a pool", pools.Create)
