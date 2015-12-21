@@ -4,10 +4,11 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
-	log "github.com/Sirupsen/logrus"
 	"io/ioutil"
 	"os"
 	"strings"
+
+	log "github.com/Sirupsen/logrus"
 
 	"github.com/fatih/structs"
 	"github.com/jawher/mow.cli"
@@ -119,6 +120,38 @@ func Show(cmd *cli.Cmd) {
 		printAppBrief([]App{a})
 		printAppDetail(a)
 	}
+}
+
+func Deploy(cmd *cli.Cmd) {
+	uuid := cmd.String(cli.StringArg{
+		Name:      "UUID",
+		Desc:      "Deployment UUID",
+		HideValue: true,
+	})
+
+	var a App
+
+	cmd.Action = func() {
+		resp, body, errs := application.Deploy(*uuid)
+
+		if errs != nil {
+			log.Fatalf("Could not deploy applications: %s", errs)
+		}
+
+		if resp.StatusCode != 202 {
+			log.Fatalf("Could not delete applications: %s", resp.Status)
+		}
+
+		err := json.Unmarshal([]byte(body), &a)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		printAppBrief([]App{a})
+		printAppDetail(a)
+	}
+
 }
 
 func Create(cmd *cli.Cmd) {
