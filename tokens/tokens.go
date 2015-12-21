@@ -9,6 +9,7 @@ import (
 	"golang.org/x/crypto/ssh/terminal"
 
 	"github.com/jawher/mow.cli"
+	"github.com/kumoru/kumoru-sdk-go/kumoru"
 	"github.com/kumoru/kumoru-sdk-go/service/authorization"
 )
 
@@ -19,15 +20,19 @@ func Create(cmd *cli.Cmd) {
 		Value:     false,
 		HideValue: true,
 	})
+	save := cmd.Bool(cli.BoolOpt{
+		Name:      "s save",
+		Desc:      "Save tokens to file",
+		Value:     false,
+		HideValue: true,
+	})
 
 	cmd.Action = func() {
 		usrHome := os.Getenv("HOME")
 		file := usrHome + "/.kumoru/config"
 
-		fmt.Println("Force: ", *force)
-
-		if _, err := os.Stat(file); err == nil && *force == false {
-			fmt.Println(file, "configuration file already exists.")
+		if kumoru.HasTokens(file, "tokens") == true && *force == false {
+			fmt.Println(file, "configuration file already exists, or tokens already exist.")
 			fmt.Println("Please see help for additonal options.")
 			os.Exit(1)
 		}
@@ -45,6 +50,16 @@ func Create(cmd *cli.Cmd) {
 		fmt.Printf("\n[tokens]\n")
 		fmt.Printf("kumoru_token_public=%s\n", token)
 		fmt.Printf("kumoru_token_private=%s\n", body)
+
+		if *save {
+			err := kumoru.SaveTokens(file, "tokens", kumoru.Ktokens{
+				Public:  token,
+				Private: body,
+			})
+			if err != nil {
+				fmt.Println("Could not save tokens to file")
+			}
+		}
 	}
 
 }

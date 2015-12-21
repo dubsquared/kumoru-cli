@@ -23,6 +23,7 @@ restore:
 	GO15VENDOREXPERIMENT=1 godep restore
 
 depsave:
+	rm -f Godeps/Godeps.json
 	GO15VENDOREXPERIMENT=1 godep save
 
 test:
