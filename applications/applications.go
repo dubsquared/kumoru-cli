@@ -129,10 +129,8 @@ func Deploy(cmd *cli.Cmd) {
 		HideValue: true,
 	})
 
-	var a App
-
 	cmd.Action = func() {
-		resp, body, errs := application.Deploy(*uuid)
+		resp, _, errs := application.Deploy(*uuid)
 
 		if errs != nil {
 			log.Fatalf("Could not deploy applications: %s", errs)
@@ -142,14 +140,7 @@ func Deploy(cmd *cli.Cmd) {
 			log.Fatalf("Could not delete applications: %s", resp.Status)
 		}
 
-		err := json.Unmarshal([]byte(body), &a)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		printAppBrief([]App{a})
-		printAppDetail(a)
+		fmt.Sprintf("Deploying application %s", uuid)
 	}
 
 }
