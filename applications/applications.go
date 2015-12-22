@@ -63,7 +63,7 @@ func Delete(cmd *cli.Cmd) {
 			log.Fatalf("Could not delete applications: %s", resp.Status)
 		}
 
-		fmt.Sprintf("Application %s accepted for archival", uuid)
+		fmt.Printf("Application %s accepted for archival\n", *uuid)
 	}
 }
 
@@ -137,10 +137,10 @@ func Deploy(cmd *cli.Cmd) {
 		}
 
 		if resp.StatusCode != 202 {
-			log.Fatalf("Could not delete applications: %s", resp.Status)
+			log.Fatalf("Could not deploy applications: %s", resp.Status)
 		}
 
-		fmt.Sprintf("Deploying application %s", uuid)
+		fmt.Printf("Deploying application %s\n", *uuid)
 	}
 
 }
