@@ -3,6 +3,8 @@ package accounts
 import (
 	"fmt"
 
+	log "github.com/Sirupsen/logrus"
+
 	"github.com/jawher/mow.cli"
 	"github.com/kumoru/kumoru-sdk-go/kumoru/utils"
 	"github.com/kumoru/kumoru-sdk-go/service/authorization"
@@ -39,6 +41,7 @@ func Create(cmd *cli.Cmd) {
 
 		if errs != nil {
 			fmt.Println("Could not create a new account.")
+			log.Fatal(errs)
 		}
 
 		switch resp.StatusCode {

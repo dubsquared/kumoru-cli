@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	log "github.com/Sirupsen/logrus"
 	"golang.org/x/crypto/ssh/terminal"
 
 	"github.com/jawher/mow.cli"
@@ -41,6 +42,7 @@ func Create(cmd *cli.Cmd) {
 
 		if errs != nil {
 			fmt.Println("Could not retrieve new tokens")
+			log.Fatal(errs)
 		}
 
 		if resp.StatusCode != 201 {
@@ -52,12 +54,13 @@ func Create(cmd *cli.Cmd) {
 		fmt.Printf("kumoru_token_private=%s\n", body)
 
 		if *save {
-			err := kumoru.SaveTokens(file, "tokens", kumoru.Ktokens{
+			errs := kumoru.SaveTokens(file, "tokens", kumoru.Ktokens{
 				Public:  token,
 				Private: body,
 			})
-			if err != nil {
+			if errs != nil {
 				fmt.Println("Could not save tokens to file")
+				log.Fatal(errs)
 			}
 		}
 	}
@@ -73,13 +76,14 @@ func credentials() (string, string) {
 	username, _ := reader.ReadString('\n')
 
 	fmt.Print("Enter Password: ")
-	bytePassword, err := terminal.ReadPassword(0)
-	if err != nil {
+	bytePassword, errs := terminal.ReadPassword(0)
+	if errs != nil {
 		fmt.Println("\nCould Not read password.")
+		log.Fatal(errs)
 		os.Exit(1)
 	}
 
-	fmt.Println("Please wait while we generate new tokesn.\n")
+	fmt.Println("\nPlease wait while we generate new tokens.\n")
 
 	return strings.TrimSpace(username), strings.TrimSpace(string(bytePassword))
 }

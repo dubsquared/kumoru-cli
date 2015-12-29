@@ -76,7 +76,7 @@ func List(cmd *cli.Cmd) {
 		}
 
 		if resp.StatusCode != 200 {
-			log.Fatalf("Cloud not retrieve applications: %s", resp.Status)
+			log.Fatalf("Cloud not retrieve pools: %s", resp.Status)
 		}
 
 		err := json.Unmarshal([]byte(body), &p)
@@ -92,7 +92,7 @@ func List(cmd *cli.Cmd) {
 func Show(cmd *cli.Cmd) {
 	uuid := cmd.String(cli.StringArg{
 		Name:      "UUID",
-		Desc:      "Application UUID",
+		Desc:      "Pool UUID",
 		HideValue: true,
 	})
 
