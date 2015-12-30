@@ -42,9 +42,10 @@ func main() {
 
 	app.Command("pools", "Pool actions", func(pool *cli.Cmd) {
 		pool.Command("create", "Create a pool", pools.Create)
+		pool.Command("delete", "Delete a pool", pools.Delete)
 		pool.Command("list", "List all pools", pools.List)
+		pool.Command("patch", "Update a pool", pools.Patch)
 		pool.Command("show", "Show pool information", pools.Show)
-		pool.Command("delete", "Delete information", pools.Delete)
 	})
 
 	app.Command("secrets", "secrets actions", func(sec *cli.Cmd) {

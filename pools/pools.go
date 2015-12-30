@@ -65,6 +65,28 @@ func Create(cmd *cli.Cmd) {
 	}
 }
 
+func Delete(cmd *cli.Cmd) {
+	uuid := cmd.String(cli.StringArg{
+		Name:      "UUID",
+		Desc:      "POOL UUID",
+		HideValue: true,
+	})
+
+	cmd.Action = func() {
+		resp, _, errs := pools.Delete(*uuid)
+
+		if errs != nil {
+			log.Fatalf("Could not delete pool: %s", errs)
+		}
+
+		if resp.StatusCode != 202 {
+			log.Fatalf("Could not delete pool: %s", resp.Status)
+		}
+
+		fmt.Sprintf("Pool %s accepted for archival", uuid)
+	}
+}
+
 func List(cmd *cli.Cmd) {
 	var p []Pool
 
@@ -86,6 +108,43 @@ func List(cmd *cli.Cmd) {
 		}
 
 		printPoolBrief(p)
+	}
+}
+
+func Patch(cmd *cli.Cmd) {
+
+	uuid := cmd.String(cli.StringArg{
+		Name:      "UUID",
+		Desc:      "Pool UUID",
+		HideValue: true,
+	})
+
+	credentials := cmd.String(cli.StringOpt{
+		Name:      "c provider-credentials",
+		Desc:      "Credentials of the cloud provider to be used (i.e. access_key:secret_key@aws)",
+		HideValue: true,
+	})
+
+	cmd.Action = func() {
+		var p Pool
+
+		resp, body, errs := pools.Patch(*uuid, *credentials)
+
+		if errs != nil {
+			log.Fatalf("Could not update pool: %s", errs)
+		}
+
+		if resp.StatusCode != 200 {
+			log.Fatalf("Cloud not update pool: %s", resp.Status)
+		}
+
+		err := json.Unmarshal([]byte(body), &p)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		printPoolDetail(p)
 	}
 }
 
@@ -117,28 +176,6 @@ func Show(cmd *cli.Cmd) {
 
 		printPoolBrief([]Pool{p})
 		printPoolDetail(p)
-	}
-}
-
-func Delete(cmd *cli.Cmd) {
-	uuid := cmd.String(cli.StringArg{
-		Name:      "UUID",
-		Desc:      "POOL UUID",
-		HideValue: true,
-	})
-
-	cmd.Action = func() {
-		resp, _, errs := pools.Delete(*uuid)
-
-		if errs != nil {
-			log.Fatalf("Could not delete pool: %s", errs)
-		}
-
-		if resp.StatusCode != 202 {
-			log.Fatalf("Could not delete pool: %s", resp.Status)
-		}
-
-		fmt.Sprintf("Pool %s accepted for archival", uuid)
 	}
 }
 
