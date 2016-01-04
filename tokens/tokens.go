@@ -30,10 +30,12 @@ func Create(cmd *cli.Cmd) {
 
 	cmd.Action = func() {
 		usrHome := os.Getenv("HOME")
-		file := usrHome + "/.kumoru/config"
+		directory := usrHome + "/.kumoru/"
+		filename := "config"
+		kfile := directory + filename
 
-		if kumoru.HasTokens(file, "tokens") == true && *force == false {
-			fmt.Println(file, "configuration file already exists, or tokens already exist.")
+		if kumoru.HasTokens(kfile, "tokens") == true && *force == false {
+			fmt.Println(kfile, "configuration file already exists, or tokens already exist.")
 			fmt.Println("Please see help for additonal options.")
 			os.Exit(1)
 		}
@@ -47,21 +49,28 @@ func Create(cmd *cli.Cmd) {
 
 		if resp.StatusCode != 201 {
 			fmt.Println(fmt.Sprintf("Could not retrieve token, server responded: %v", resp.Status))
+			os.Exit(1)
 		}
 
-		fmt.Printf("\n[tokens]\n")
-		fmt.Printf("kumoru_token_public=%s\n", token)
-		fmt.Printf("kumoru_token_private=%s\n", body)
+		switch *save {
 
-		if *save {
-			errs := kumoru.SaveTokens(file, "tokens", kumoru.Ktokens{
+		default:
+			fmt.Printf("\n[tokens]\n")
+			fmt.Printf("kumoru_token_public=%s\n", token)
+			fmt.Printf("kumoru_token_private=%s\n", body)
+
+		case true:
+			errs := kumoru.SaveTokens(directory, filename, "tokens", kumoru.Ktokens{
 				Public:  token,
 				Private: body,
 			})
+
 			if errs != nil {
 				fmt.Println("Could not save tokens to file")
 				log.Fatal(errs)
 			}
+			fmt.Printf("\nTokens saved to %s.\n", kfile)
+
 		}
 	}
 
