@@ -32,6 +32,7 @@ type App struct {
 	Ports               []string            `json:"ports"`
 	ProviderCredentials string              `json:"provider_credentials"`
 	Rules               map[string]int      `json:"rules"`
+	SSLPorts            []string            `json:"ssl_ports"`
 	Status              string              `json:"status"`
 	UpdatedAt           string              `json:"updated_at"`
 	Url                 string              `json:"url"`
@@ -117,7 +118,6 @@ func Show(cmd *cli.Cmd) {
 			log.Fatal(err)
 		}
 
-		printAppBrief([]App{a})
 		printAppDetail(a)
 	}
 }
@@ -169,15 +169,21 @@ func Create(cmd *cli.Cmd) {
 		HideValue: true,
 	})
 
+	certificateChain := cmd.String(cli.StringOpt{
+		Name:      "certificate_chain_file",
+		Desc:      "File(PEM encoded) contianing the certificate chain associated with the public certificate (optional)",
+		HideValue: true,
+	})
+
 	privateKey := cmd.String(cli.StringOpt{
 		Name:      "private_key_file",
 		Desc:      "File(PEM encoded) containing the SSL key associated with the public certificate (required if providing a certificate)",
 		HideValue: true,
 	})
 
-	certificateChain := cmd.String(cli.StringOpt{
-		Name:      "certificate_chain_file",
-		Desc:      "File(PEM encoded) contianing the certificate chain associated with the public certificate (optional)",
+	sslPorts := cmd.Strings(cli.StringsOpt{
+		Name:      "ssl_port",
+		Desc:      "Port to be assocaited with the certificate",
 		HideValue: true,
 	})
 
@@ -201,7 +207,7 @@ func Create(cmd *cli.Cmd) {
 
 	ports := cmd.Strings(cli.StringsOpt{
 		Name:      "p port",
-		Desc:      "Port",
+		Desc:      "Port (non-ssl)",
 		HideValue: true,
 	})
 
@@ -239,7 +245,7 @@ func Create(cmd *cli.Cmd) {
 
 		certificates := readCertificates(certificate, privateKey, certificateChain)
 
-		resp, body, errs := application.Create(*poolUuid, certificates, *name, *image, *providerCredentials, mData, eVars, *rules, *ports)
+		resp, body, errs := application.Create(*poolUuid, certificates, *name, *image, *providerCredentials, mData, eVars, *rules, *ports, *sslPorts)
 		if errs != nil {
 			log.Fatalf("Could not create application: %s", errs)
 		}
@@ -254,7 +260,6 @@ func Create(cmd *cli.Cmd) {
 			log.Fatal(err)
 		}
 
-		printAppBrief([]App{a})
 		printAppDetail(a)
 	}
 }
@@ -284,15 +289,21 @@ func Patch(cmd *cli.Cmd) {
 		HideValue: true,
 	})
 
+	certificateChain := cmd.String(cli.StringOpt{
+		Name:      "certificate_chain_file",
+		Desc:      "File(PEM encoded) contianing the certificate chain associated with the public certificate (optional)",
+		HideValue: true,
+	})
+
 	privateKey := cmd.String(cli.StringOpt{
 		Name:      "private_key_file",
 		Desc:      "File(PEM encoded) containing the SSL key associated with the public certificate (required if providing a certificate)",
 		HideValue: true,
 	})
 
-	certificateChain := cmd.String(cli.StringOpt{
-		Name:      "certificate_chain_file",
-		Desc:      "File(PEM encoded) contianing the certificate chain associated with the public certificate (optional)",
+	sslPorts := cmd.Strings(cli.StringsOpt{
+		Name:      "ssl_port",
+		Desc:      "Port to be assocaited with the certificate",
 		HideValue: true,
 	})
 
@@ -354,7 +365,7 @@ func Patch(cmd *cli.Cmd) {
 
 		certificates := readCertificates(certificate, privateKey, certificateChain)
 
-		resp, body, errs := application.Patch(*uuid, certificates, *name, *image, *providerCredentials, mData, eVars, *rules, *ports)
+		resp, body, errs := application.Patch(*uuid, certificates, *name, *image, *providerCredentials, mData, eVars, *rules, *ports, *sslPorts)
 		if errs != nil {
 			log.Fatalf("Could not patch application: %s", errs)
 		}
