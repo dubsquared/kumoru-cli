@@ -147,8 +147,9 @@ func Deploy(cmd *cli.Cmd) {
 
 func Create(cmd *cli.Cmd) {
 	poolUuid := cmd.String(cli.StringArg{
-		Name: "POOL_UUID",
-		Desc: "UUID of pool to create application in",
+		Name:      "POOL_UUID",
+		Desc:      "UUID of pool to create application in",
+		HideValue: true,
 	})
 
 	image := cmd.String(cli.StringArg{
@@ -183,7 +184,7 @@ func Create(cmd *cli.Cmd) {
 
 	sslPorts := cmd.Strings(cli.StringsOpt{
 		Name:      "ssl_port",
-		Desc:      "Port to be assocaited with the certificate",
+		Desc:      "Port to be associated with the certificate",
 		HideValue: true,
 	})
 
@@ -213,7 +214,7 @@ func Create(cmd *cli.Cmd) {
 
 	tags := cmd.Strings(cli.StringsOpt{
 		Name:      "t tags",
-		Desc:      "Tags associated with the aplication being created",
+		Desc:      "Tags associated with the application being created",
 		HideValue: true,
 	})
 
