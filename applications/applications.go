@@ -286,19 +286,19 @@ func Patch(cmd *cli.Cmd) {
 
 	certificate := cmd.String(cli.StringOpt{
 		Name:      "certificate_file",
-		Desc:      "File(PEM encoded) containing the SSL certificate associated with the application",
+		Desc:      "File (PEM) containing the SSL certificate associated with the application",
 		HideValue: true,
 	})
 
 	certificateChain := cmd.String(cli.StringOpt{
 		Name:      "certificate_chain_file",
-		Desc:      "File(PEM encoded) contianing the certificate chain associated with the public certificate (optional)",
+		Desc:      "File (PEM) contianing the certificate chain associated with the public certificate (optional)",
 		HideValue: true,
 	})
 
 	privateKey := cmd.String(cli.StringOpt{
 		Name:      "private_key_file",
-		Desc:      "File(PEM encoded) containing the SSL key associated with the public certificate (required if providing a certificate)",
+		Desc:      "File (PEM) containing the SSL key associated with the public certificate (required if providing a certificate)",
 		HideValue: true,
 	})
 
@@ -491,7 +491,7 @@ func readCertificates(certificate, privateKey, certificateChain *string) string 
 func readEnvFile(file string) []string {
 	f, err := os.Open(file)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	defer f.Close()
@@ -502,8 +502,6 @@ func readEnvFile(file string) []string {
 	for scanner.Scan() {
 		x = append(x, scanner.Text())
 	}
-
-	fmt.Println(x)
 
 	return x
 }
