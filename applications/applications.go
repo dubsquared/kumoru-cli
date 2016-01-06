@@ -421,10 +421,10 @@ func metaData(meta, tags []string) string {
 func printAppBrief(a []App) {
 	var output []string
 
-	output = append(output, fmt.Sprintf("Name | Uuid | Status | Location | Ports | Rules"))
+	output = append(output, fmt.Sprintf("Name | Uuid | Status | Location | Ports | SSL Ports | Rules"))
 
 	for i := 0; i < len(a); i++ {
-		output = append(output, fmt.Sprintf("%s | %s | %s | %s | %s | %s", a[i].Name, a[i].Uuid, a[i].Status, a[i].Location, a[i].Ports, fmtRules(a[i].Rules)))
+		output = append(output, fmt.Sprintf("%s | %s | %s | %s | %s | %s | %s", a[i].Name, a[i].Uuid, a[i].Status, a[i].Location, a[i].Ports, a[i].SSLPorts, fmtRules(a[i].Rules)))
 	}
 
 	fmt.Println(columnize.SimpleFormat(output))
