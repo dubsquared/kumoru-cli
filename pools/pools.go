@@ -28,15 +28,14 @@ type Pool struct {
 
 func Create(cmd *cli.Cmd) {
 
-	location := cmd.String(cli.StringOpt{
-		Name:      "l location",
-		Desc:      "location of pool to be created",
-		EnvVar:    "KUMORU_POOL_LOCATION",
+	location := cmd.String(cli.StringArg{
+		Name:      "LOCATION",
+		Desc:      "location of pool to be created (i.e. us-east-1)",
 		HideValue: true,
 	})
 
-	credentials := cmd.String(cli.StringOpt{
-		Name:      "c provider-credentials",
+	credentials := cmd.String(cli.StringArg{
+		Name:      "CREDENTIALS",
 		Desc:      "Credentials of the cloud provider to be used (i.e. access_key:secret_key@aws)",
 		HideValue: true,
 	})
