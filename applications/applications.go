@@ -176,6 +176,12 @@ func Create(cmd *cli.Cmd) {
 		HideValue: true,
 	})
 
+	envFile := cmd.String(cli.StringOpt{
+		Name:      "env_file",
+		Desc:      "Environment variables file",
+		HideValue: true,
+	})
+
 	privateKey := cmd.String(cli.StringOpt{
 		Name:      "private_key_file",
 		Desc:      "File(PEM encoded) containing the SSL key associated with the public certificate (required if providing a certificate)",
@@ -224,20 +230,12 @@ func Create(cmd *cli.Cmd) {
 		HideValue: true,
 	})
 
-	file := cmd.String(cli.StringOpt{
-		Name:      "f file",
-		Desc:      "Environment variables file",
-		HideValue: true,
-	})
-
 	cmd.Action = func() {
 		var a App
 		var eVars []string
 
-		fmt.Println(*file)
-
-		if *file != "" {
-			eVars = readEnvFile(*file)
+		if *envFile != "" {
+			eVars = readEnvFile(*envFile)
 		} else {
 			eVars = *enVars
 		}
@@ -287,6 +285,12 @@ func Patch(cmd *cli.Cmd) {
 	certificate := cmd.String(cli.StringOpt{
 		Name:      "certificate_file",
 		Desc:      "File (PEM) containing the SSL certificate associated with the application",
+		HideValue: true,
+	})
+
+	envFile := cmd.String(cli.StringOpt{
+		Name:      "env_file",
+		Desc:      "Environment variables file",
 		HideValue: true,
 	})
 
@@ -344,20 +348,12 @@ func Patch(cmd *cli.Cmd) {
 		HideValue: true,
 	})
 
-	file := cmd.String(cli.StringOpt{
-		Name:      "f file",
-		Desc:      "Environment variables file",
-		HideValue: true,
-	})
-
 	cmd.Action = func() {
 		var a App
 		var eVars []string
 
-		fmt.Println(*file)
-
-		if *file != "" {
-			eVars = readEnvFile(*file)
+		if *envFile != "" {
+			eVars = readEnvFile(*envFile)
 		} else {
 			eVars = *enVars
 		}
