@@ -1,17 +1,26 @@
 package accounts
 
 import (
+	"encoding/json"
 	"fmt"
 
 	log "github.com/Sirupsen/logrus"
 
+	"github.com/fatih/structs"
 	"github.com/jawher/mow.cli"
-	"github.com/kumoru/kumoru-sdk-go/kumoru/utils"
 	"github.com/kumoru/kumoru-sdk-go/service/authorization"
+	"github.com/ryanuber/columnize"
 )
 
-func Create(cmd *cli.Cmd) {
+type Account struct {
+	CreatedAt string `json:"created_at"`
+	Email     string `json:"email"`
+	GivenName string `json:"given_name"`
+	Surname   string `json:"surname"`
+	UpdatedAt string `json:"updated_at"`
+}
 
+func Create(cmd *cli.Cmd) {
 	user := cmd.String(cli.StringArg{
 		Name:      "USER",
 		Desc:      "Username",
@@ -40,49 +49,67 @@ func Create(cmd *cli.Cmd) {
 		resp, body, errs := authorization.CreateAcct(*user, *fName, *lName, *password)
 
 		if errs != nil {
-			fmt.Println("Could not create a new account.")
-			log.Fatal(errs)
+			log.Fatalf("Could not create account: %s", errs)
 		}
 
 		switch resp.StatusCode {
 		case 200:
-			fmt.Println("Account created successfully")
-			fmt.Println(resp.StatusCode)
-			utils.Pprint(body)
-		case 409:
-			fmt.Println("Account already exists.")
-			fmt.Println(resp.StatusCode)
-			utils.Pprint(body)
+			var account Account
+
+			err := json.Unmarshal([]byte(body), &account)
+
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			printAccountDetail(&account)
 		default:
-			fmt.Println(resp.StatusCode)
-			utils.Pprint(body)
+			log.Fatalf("Could not create account: %s", resp.Status)
 		}
 	}
 }
 
 func Show(cmd *cli.Cmd) {
-
 	user := cmd.String(cli.StringArg{
 		Name:      "USER",
 		Desc:      "Username",
 		HideValue: true,
 	})
 
+	var account Account
+
 	cmd.Action = func() {
 		resp, body, errs := authorization.ShowAcct(*user)
+
 		if errs != nil {
-			fmt.Println("Could not create a new account.")
+			log.Fatalf("Could not retrieve account: %s", errs)
 		}
 
 		switch resp.StatusCode {
 		case 200:
-			fmt.Println("Account created successfully")
-			fmt.Println(resp.StatusCode)
-			utils.Pprint(body)
+			err := json.Unmarshal([]byte(body), &account)
+
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			printAccountDetail(&account)
 		default:
-			fmt.Println(resp.StatusCode)
-			utils.Pprint(body)
+			log.Fatalf("Could not retrieve account: %s", resp.Status)
 		}
 
 	}
+}
+
+func printAccountDetail(a *Account) {
+	var output []string
+	fields := structs.New(a).Fields()
+
+	fmt.Println("\nAccount Details:\n")
+
+	for _, f := range fields {
+		output = append(output, fmt.Sprintf("%s: |%s\n", f.Name(), f.Value()))
+	}
+
+	fmt.Println(columnize.SimpleFormat(output))
 }

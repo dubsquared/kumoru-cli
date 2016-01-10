@@ -82,7 +82,7 @@ func Delete(cmd *cli.Cmd) {
 			log.Fatalf("Could not delete pool: %s", resp.Status)
 		}
 
-		fmt.Sprintf("Pool %s accepted for archival", uuid)
+		fmt.Sprintf("Pool %s accepted for archival\n", *uuid)
 	}
 }
 
