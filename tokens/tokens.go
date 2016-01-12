@@ -43,12 +43,11 @@ func Create(cmd *cli.Cmd) {
 		token, resp, body, errs := authorization.GetTokens(credentials())
 
 		if errs != nil {
-			fmt.Println("Could not retrieve new tokens")
-			log.Fatal(errs)
+			log.Fatalf("Could not retrieve new tokens: %s", errs)
 		}
 
 		if resp.StatusCode != 201 {
-			fmt.Println(fmt.Sprintf("Could not retrieve token, server responded: %v", resp.Status))
+			log.Fatalf("Could not retrieve token: %s", resp.Status)
 			os.Exit(1)
 		}
 
@@ -66,9 +65,9 @@ func Create(cmd *cli.Cmd) {
 			})
 
 			if errs != nil {
-				fmt.Println("Could not save tokens to file")
-				log.Fatal(errs)
+				log.Fatalf("Could not save tokens to file: %s", errs)
 			}
+
 			fmt.Printf("\nTokens saved to %s.\n", kfile)
 
 		}
