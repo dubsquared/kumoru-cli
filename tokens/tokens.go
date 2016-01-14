@@ -16,7 +16,7 @@ import (
 
 func Create(cmd *cli.Cmd) {
 	force := cmd.Bool(cli.BoolOpt{
-		Name:      "force",
+		Name:      "f force",
 		Desc:      "If a set of tokens already exist, overwrite them.",
 		Value:     false,
 		HideValue: true,
