@@ -21,9 +21,9 @@ type Account struct {
 }
 
 func Create(cmd *cli.Cmd) {
-	user := cmd.String(cli.StringArg{
-		Name:      "USER",
-		Desc:      "Username",
+	email := cmd.String(cli.StringArg{
+		Name:      "EMAIL",
+		Desc:      "email address",
 		HideValue: true,
 	})
 
@@ -46,7 +46,7 @@ func Create(cmd *cli.Cmd) {
 	})
 
 	cmd.Action = func() {
-		resp, body, errs := authorization.CreateAcct(*user, *fName, *lName, *password)
+		resp, body, errs := authorization.CreateAcct(*email, *fName, *lName, *password)
 
 		if errs != nil {
 			log.Fatalf("Could not create account: %s", errs)
@@ -70,16 +70,16 @@ func Create(cmd *cli.Cmd) {
 }
 
 func Show(cmd *cli.Cmd) {
-	user := cmd.String(cli.StringArg{
-		Name:      "USER",
-		Desc:      "Username",
+	email := cmd.String(cli.StringArg{
+		Name:      "EMAIL",
+		Desc:      "email address",
 		HideValue: true,
 	})
 
 	var account Account
 
 	cmd.Action = func() {
-		resp, body, errs := authorization.ShowAcct(*user)
+		resp, body, errs := authorization.ShowAcct(*email)
 
 		if errs != nil {
 			log.Fatalf("Could not retrieve account: %s", errs)
