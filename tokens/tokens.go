@@ -17,13 +17,13 @@ import (
 func Create(cmd *cli.Cmd) {
 	force := cmd.Bool(cli.BoolOpt{
 		Name:      "f force",
-		Desc:      "If a set of tokens already exist, overwrite them.",
+		Desc:      "If a set of tokens already exist in ~/.kumoru/config, overwrite them.",
 		Value:     false,
 		HideValue: true,
 	})
-	save := cmd.Bool(cli.BoolOpt{
-		Name:      "s save",
-		Desc:      "Save tokens to file",
+	dontSave := cmd.Bool(cli.BoolOpt{
+		Name:      "d dont_save",
+		Desc:      "Output tokens to screen instead of saving to configuration",
 		Value:     false,
 		HideValue: true,
 	})
@@ -47,18 +47,12 @@ func Create(cmd *cli.Cmd) {
 		}
 
 		if resp.StatusCode != 201 {
-			log.Fatalf("Could not retrieve token: %s", resp.Status)
+			log.Fatalf("Could not retrieve tokens: %s", resp.Status)
 			os.Exit(1)
 		}
 
-		switch *save {
-
+		switch *dontSave {
 		default:
-			fmt.Printf("\n[tokens]\n")
-			fmt.Printf("kumoru_token_public=%s\n", token)
-			fmt.Printf("kumoru_token_private=%s\n", body)
-
-		case true:
 			errs := kumoru.SaveTokens(directory, filename, "tokens", kumoru.Ktokens{
 				Public:  token,
 				Private: body,
@@ -69,6 +63,10 @@ func Create(cmd *cli.Cmd) {
 			}
 
 			fmt.Printf("\nTokens saved to %s.\n", kfile)
+		case true:
+			fmt.Printf("\n[tokens]\n")
+			fmt.Printf("kumoru_token_public=%s\n", token)
+			fmt.Printf("kumoru_token_private=%s\n", body)
 
 		}
 	}
