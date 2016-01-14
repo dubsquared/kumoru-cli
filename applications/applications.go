@@ -46,7 +46,7 @@ type Certificates struct {
 	CertificateChain string `json:"certificate_chain,omitempty"`
 }
 
-func Delete(cmd *cli.Cmd) {
+func Archive(cmd *cli.Cmd) {
 	uuid := cmd.String(cli.StringArg{
 		Name:      "UUID",
 		Desc:      "Application UUID",
@@ -57,11 +57,11 @@ func Delete(cmd *cli.Cmd) {
 		resp, _, errs := application.Delete(*uuid)
 
 		if errs != nil {
-			log.Fatalf("Could not delete applications: %s", errs)
+			log.Fatalf("Could not archive applications: %s", errs)
 		}
 
 		if resp.StatusCode != 202 {
-			log.Fatalf("Could not delete applications: %s", resp.Status)
+			log.Fatalf("Could not archive applications: %s", resp.Status)
 		}
 
 		fmt.Printf("Application %s accepted for archival\n", *uuid)

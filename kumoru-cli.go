@@ -24,7 +24,7 @@ func init() {
 func main() {
 	app := cli.App("kumoru", "Utility to interact with Kumoru services.")
 
-	app.Version("v version", "0.0.18")
+	app.Version("v version", "0.0.19")
 
 	app.Command("accounts", "Account actions", func(act *cli.Cmd) {
 		act.Command("create", "Create an account ", accounts.Create)
@@ -32,8 +32,8 @@ func main() {
 	})
 
 	app.Command("applications", "Application actions", func(apps *cli.Cmd) {
+		apps.Command("archive", "Archive an application", applications.Archive)
 		apps.Command("create", "Create an application", applications.Create)
-		apps.Command("delete", "Delete an application", applications.Delete)
 		apps.Command("deploy", "Deploy an application", applications.Deploy)
 		apps.Command("list", "List all applications", applications.List)
 		apps.Command("patch", "Update an application", applications.Patch)
@@ -41,8 +41,8 @@ func main() {
 	})
 
 	app.Command("pools", "Pool actions", func(pool *cli.Cmd) {
+		pool.Command("archive", "Archive a pool", pools.Archive)
 		pool.Command("create", "Create a pool", pools.Create)
-		pool.Command("delete", "Delete a pool", pools.Delete)
 		pool.Command("list", "List all pools", pools.List)
 		pool.Command("patch", "Update a pool", pools.Patch)
 		pool.Command("show", "Show pool information", pools.Show)

@@ -64,7 +64,7 @@ func Create(cmd *cli.Cmd) {
 	}
 }
 
-func Delete(cmd *cli.Cmd) {
+func Archive(cmd *cli.Cmd) {
 	uuid := cmd.String(cli.StringArg{
 		Name:      "UUID",
 		Desc:      "POOL UUID",
@@ -75,11 +75,11 @@ func Delete(cmd *cli.Cmd) {
 		resp, _, errs := pools.Delete(*uuid)
 
 		if errs != nil {
-			log.Fatalf("Could not delete pool: %s", errs)
+			log.Fatalf("Could not archive pool: %s", errs)
 		}
 
 		if resp.StatusCode != 202 {
-			log.Fatalf("Could not delete pool: %s", resp.Status)
+			log.Fatalf("Could not archive pool: %s", resp.Status)
 		}
 
 		fmt.Sprintf("Pool %s accepted for archival\n", *uuid)
