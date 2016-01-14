@@ -3,6 +3,9 @@ package accounts
 import (
 	"encoding/json"
 	"fmt"
+	"os"
+	"reflect"
+	"strings"
 
 	log "github.com/Sirupsen/logrus"
 
@@ -10,6 +13,7 @@ import (
 	"github.com/jawher/mow.cli"
 	"github.com/kumoru/kumoru-sdk-go/service/authorization"
 	"github.com/ryanuber/columnize"
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 type Account struct {
@@ -46,6 +50,12 @@ func Create(cmd *cli.Cmd) {
 	})
 
 	cmd.Action = func() {
+
+		if *password == "" {
+			*password = passwordPrompt()
+			fmt.Println("\n")
+		}
+
 		resp, body, errs := authorization.CreateAcct(*email, *fName, *lName, *password)
 
 		if errs != nil {
@@ -112,4 +122,31 @@ func printAccountDetail(a *Account) {
 	}
 
 	fmt.Println(columnize.SimpleFormat(output))
+}
+
+func passwordPrompt() string {
+	fmt.Print("Enter password: ")
+	password, errs := terminal.ReadPassword(0)
+
+	if errs != nil {
+		fmt.Println("\nCould not read password:")
+		log.Fatal(errs)
+		os.Exit(1)
+	}
+
+	fmt.Print("\nConfirm password: ")
+	passwordConfirm, errs := terminal.ReadPassword(0)
+
+	if errs != nil {
+		fmt.Println("\nCould Not read password.")
+		log.Fatal(errs)
+		os.Exit(1)
+	}
+
+	if reflect.DeepEqual(password, passwordConfirm) == false {
+		fmt.Println("\n")
+		log.Fatal("Passwords do not match")
+	}
+
+	return strings.TrimSpace(string(password))
 }

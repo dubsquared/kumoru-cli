@@ -7,11 +7,11 @@ import (
 	"strings"
 
 	log "github.com/Sirupsen/logrus"
-	"golang.org/x/crypto/ssh/terminal"
 
 	"github.com/jawher/mow.cli"
 	"github.com/kumoru/kumoru-sdk-go/kumoru"
 	"github.com/kumoru/kumoru-sdk-go/service/authorization"
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 func Create(cmd *cli.Cmd) {
