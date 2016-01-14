@@ -34,10 +34,12 @@ func Create(cmd *cli.Cmd) {
 		filename := "config"
 		kfile := directory + filename
 
-		if kumoru.HasTokens(kfile, "tokens") == true && *force == false {
-			fmt.Println(kfile, "configuration file already exists, or tokens already exist.")
-			fmt.Println("Please see help for additonal options.")
-			os.Exit(1)
+		if *dontSave == false {
+			if kumoru.HasTokens(kfile, "tokens") == true && *force == false {
+				fmt.Println(kfile, "configuration file already exists, or tokens already exist.")
+				fmt.Println("Please see help for additonal options.")
+				os.Exit(1)
+			}
 		}
 
 		token, resp, body, errs := authorization.GetTokens(credentials())
@@ -67,8 +69,8 @@ func Create(cmd *cli.Cmd) {
 			fmt.Printf("\n[tokens]\n")
 			fmt.Printf("kumoru_token_public=%s\n", token)
 			fmt.Printf("kumoru_token_private=%s\n", body)
-
 		}
+
 	}
 
 }
