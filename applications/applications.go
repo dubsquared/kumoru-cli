@@ -384,7 +384,7 @@ func fmtRules(rules map[string]int) string {
 	var r string
 
 	for k, v := range rules {
-		r = fmt.Sprintf("%s=%v ", k, v)
+		r += fmt.Sprintf("%s=%v ", k, v)
 	}
 
 	return r
@@ -445,7 +445,10 @@ func printAppDetail(a App) {
 			mdata, _ := json.Marshal(a.Metadata)
 			output = append(output, fmt.Sprintf("%s: |%s\n", f.Name(), mdata))
 		} else if f.Name() == "Rules" {
-			output = append(output, fmt.Sprintf("%s: |%v\n", f.Name(), fmtRules(a.Rules)))
+			output = append(output, fmt.Sprintf("%s:\n", f.Name()))
+			for k, v := range a.Rules {
+				output = append(output, fmt.Sprintf("……|%s=%v", k, v))
+			}
 		} else {
 			output = append(output, fmt.Sprintf("%s: |%v\n", f.Name(), f.Value()))
 		}
