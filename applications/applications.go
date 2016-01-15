@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"strings"
 
 	log "github.com/Sirupsen/logrus"
 
@@ -17,27 +16,27 @@ import (
 )
 
 type App struct {
-	Addresses           []string            `json:"addresses"`
-	CreatedAt           string              `json:"created_at"`
-	CurrentDeployments  map[string]string   `json:"current_deployments"`
-	Environment         map[string]string   `json:"environment"`
-	Hash                string              `json:"hash"`
-	ImageUrl            string              `json:"image_url"`
-	Location            string              `json:"pool_location"`
-	LogToken            string              `json:"log_token"`
-	Metadata            map[string][]string `json:"metadata"`
-	OrchestrationUrl    string              `json:"orchestration_url"`
-	Name                string              `json:"name"`
-	PoolUuid            string              `json:"pool_uuid"`
-	Ports               []string            `json:"ports"`
-	ProviderCredentials string              `json:"provider_credentials"`
-	Rules               map[string]int      `json:"rules"`
-	SSLPorts            []string            `json:"ssl_ports"`
-	Status              string              `json:"status"`
-	UpdatedAt           string              `json:"updated_at"`
-	Url                 string              `json:"url"`
-	Uuid                string              `json:"uuid"`
-	Certificates        map[string]string   `json:"certificates"`
+	Addresses           []string               `json:"addresses"`
+	CreatedAt           string                 `json:"created_at"`
+	CurrentDeployments  map[string]string      `json:"current_deployments"`
+	Environment         map[string]string      `json:"environment"`
+	Hash                string                 `json:"hash"`
+	ImageUrl            string                 `json:"image_url"`
+	Location            string                 `json:"pool_location"`
+	LogToken            string                 `json:"log_token"`
+	Metadata            map[string]interface{} `json:"metadata"`
+	OrchestrationUrl    string                 `json:"orchestration_url"`
+	Name                string                 `json:"name"`
+	PoolUuid            string                 `json:"pool_uuid"`
+	Ports               []string               `json:"ports"`
+	ProviderCredentials string                 `json:"provider_credentials"`
+	Rules               map[string]int         `json:"rules"`
+	SSLPorts            []string               `json:"ssl_ports"`
+	Status              string                 `json:"status"`
+	UpdatedAt           string                 `json:"updated_at"`
+	Url                 string                 `json:"url"`
+	Uuid                string                 `json:"uuid"`
+	Certificates        map[string]string      `json:"certificates"`
 }
 
 type Certificates struct {
@@ -224,7 +223,7 @@ func Create(cmd *cli.Cmd) {
 		HideValue: true,
 	})
 
-	meta := cmd.Strings(cli.StringsOpt{
+	meta := cmd.String(cli.StringOpt{
 		Name:      "m metadata",
 		Desc:      "Metadata associated with the application being created (i.e. location=cloud)",
 		HideValue: true,
@@ -342,7 +341,7 @@ func Patch(cmd *cli.Cmd) {
 		HideValue: true,
 	})
 
-	meta := cmd.Strings(cli.StringsOpt{
+	meta := cmd.String(cli.StringOpt{
 		Name:      "m metadata",
 		Desc:      "Metadata associated with the application being created (i.e. location=cloud)",
 		HideValue: true,
@@ -391,28 +390,31 @@ func fmtRules(rules map[string]int) string {
 	return r
 }
 
-func metaData(meta, tags []string) string {
-	var mdata string
+//metaData combines the provided list of tags with provided arbitary metadata and asserts the result is proper JSON
+//It returns the metadata JSON string
+func metaData(meta string, tags []string) string {
+	js := map[string]interface{}{
+		"tags": []string{},
+	}
 
 	if len(meta) > 0 {
-
-		for _, data := range meta {
-			e := strings.Split(data, "=")
-			mdata += fmt.Sprintf("\"%s\":\"%s\",", e[0], e[1])
+		err := json.Unmarshal([]byte(meta), &js)
+		if err != nil {
+			fmt.Println("metadata must be valid JSON:")
+			log.Fatal(err)
 		}
 	}
 
 	if len(tags) > 0 {
-		t, _ := json.Marshal(tags)
-		mdata += fmt.Sprintf("\"tags\": %s", t)
+		js["tags"] = tags
 	}
 
-	if mdata == "" {
-		return ""
+	mdata, err := json.Marshal(js)
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	return fmt.Sprintf("{%s}\n", mdata)
-
+	return fmt.Sprintf("%s", mdata)
 }
 
 func printAppBrief(a []App) {
@@ -436,6 +438,9 @@ func printAppDetail(a App) {
 	for _, f := range fields {
 		if f.Name() == "Rules" {
 			output = append(output, fmt.Sprintf("%s: |%v\n", f.Name(), fmtRules(a.Rules)))
+		} else if f.Name() == "Metadata" {
+			mdata, _ := json.Marshal(a.Metadata)
+			output = append(output, fmt.Sprintf("%s: |%s\n", f.Name(), mdata))
 		} else {
 			output = append(output, fmt.Sprintf("%s: |%v\n", f.Name(), f.Value()))
 		}
