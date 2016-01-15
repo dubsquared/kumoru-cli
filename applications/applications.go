@@ -436,11 +436,16 @@ func printAppDetail(a App) {
 	fmt.Println("\nApplication Details:\n")
 
 	for _, f := range fields {
-		if f.Name() == "Rules" {
-			output = append(output, fmt.Sprintf("%s: |%v\n", f.Name(), fmtRules(a.Rules)))
+		if f.Name() == "CurrentDeployments" {
+			output = append(output, fmt.Sprintf("%s:\n", f.Name()))
+			for k, v := range a.CurrentDeployments {
+				output = append(output, fmt.Sprintf("……|%s: %s", k, v))
+			}
 		} else if f.Name() == "Metadata" {
 			mdata, _ := json.Marshal(a.Metadata)
 			output = append(output, fmt.Sprintf("%s: |%s\n", f.Name(), mdata))
+		} else if f.Name() == "Rules" {
+			output = append(output, fmt.Sprintf("%s: |%v\n", f.Name(), fmtRules(a.Rules)))
 		} else {
 			output = append(output, fmt.Sprintf("%s: |%v\n", f.Name(), f.Value()))
 		}
