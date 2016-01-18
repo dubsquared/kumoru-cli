@@ -27,6 +27,6 @@ depsave:
 	GO15VENDOREXPERIMENT=1 godep save
 
 test:
-	GO15VENDOREXPERIMENT=1 go test -cover
+	GO15VENDOREXPERIMENT=1 go test -cover ./...
 
 release: clean restore test osx-binary linux-binary
