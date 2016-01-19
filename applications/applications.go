@@ -39,7 +39,6 @@ type App struct {
 	Hash                string                 `json:"hash"`
 	ImageUrl            string                 `json:"image_url"`
 	Location            string                 `json:"pool_location"`
-	LogToken            string                 `json:"log_token"`
 	Metadata            map[string]interface{} `json:"metadata"`
 	OrchestrationUrl    string                 `json:"orchestration_url"`
 	Name                string                 `json:"name"`

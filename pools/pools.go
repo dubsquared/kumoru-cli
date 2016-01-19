@@ -31,7 +31,6 @@ import (
 type Pool struct {
 	CreatedAt        string `json:"created_at"`
 	Credentials      string `json:"credentials"`
-	HostLogToken     string `json:"host_log_token"`
 	Key              string `json:"key"`
 	Location         string `json:"location"`
 	OrchestrationUrl string `json:"orchestration_url"`
