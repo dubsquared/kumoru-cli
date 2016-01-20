@@ -80,7 +80,7 @@ func Create(cmd *cli.Cmd) {
 				log.Fatalf("Could not save tokens to file: %s", errs)
 			}
 
-			fmt.Printf("\nTokens saved to %s.\n", kfile)
+			fmt.Printf("\nTokens saved to %s\n", kfile)
 		case true:
 			fmt.Printf("\n[tokens]\n")
 			fmt.Printf("kumoru_token_public=%s\n", token)
