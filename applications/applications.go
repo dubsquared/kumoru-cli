@@ -232,9 +232,9 @@ func Create(cmd *cli.Cmd) {
 		HideValue: true,
 	})
 
-	tags := cmd.Strings(cli.StringsOpt{
-		Name:      "t tags",
-		Desc:      "Tags associated with the application being created",
+	labels := cmd.Strings(cli.StringsOpt{
+		Name:      "l label",
+		Desc:      "Label associated with the application",
 		HideValue: true,
 	})
 
@@ -254,7 +254,7 @@ func Create(cmd *cli.Cmd) {
 			eVars = *enVars
 		}
 
-		mData := metaData(*meta, *tags)
+		mData := metaData(*meta, *labels)
 
 		certificates := readCertificates(certificate, privateKey, certificateChain)
 
@@ -350,9 +350,9 @@ func Patch(cmd *cli.Cmd) {
 		HideValue: true,
 	})
 
-	tags := cmd.Strings(cli.StringsOpt{
-		Name:      "t tags",
-		Desc:      "Tags associated with the aplication being created",
+	labels := cmd.Strings(cli.StringsOpt{
+		Name:      "l label",
+		Desc:      "Label associated with the aplication",
 		HideValue: true,
 	})
 
@@ -372,7 +372,7 @@ func Patch(cmd *cli.Cmd) {
 			eVars = *enVars
 		}
 
-		mData := metaData(*meta, *tags)
+		mData := metaData(*meta, *labels)
 
 		certificates := readCertificates(certificate, privateKey, certificateChain)
 
@@ -405,11 +405,11 @@ func fmtRules(rules map[string]int) string {
 	return r
 }
 
-//metaData combines the provided list of tags with provided arbitary metadata and asserts the result is proper JSON
+//metaData combines the provided list of labels with provided arbitary metadata and asserts the result is proper JSON
 //It returns the metadata JSON string
-func metaData(meta string, tags []string) string {
+func metaData(meta string, labels []string) string {
 	js := map[string]interface{}{
-		"tags": []string{},
+		"labels": []string{},
 	}
 
 	if len(meta) > 0 {
@@ -420,8 +420,8 @@ func metaData(meta string, tags []string) string {
 		}
 	}
 
-	if len(tags) > 0 {
-		js["tags"] = tags
+	if len(labels) > 0 {
+		js["labels"] = labels
 	}
 
 	mdata, err := json.Marshal(js)
