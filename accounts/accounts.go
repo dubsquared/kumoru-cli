@@ -127,6 +127,32 @@ func Show(cmd *cli.Cmd) {
 	}
 }
 
+func ResetPassword(cmd *cli.Cmd) {
+	email := cmd.String(cli.StringArg{
+		Name:      "EMAIL",
+		Desc:      "email address",
+		HideValue: true,
+	})
+
+	cmd.Action = func() {
+		resp, _, errs := authorization.ResetPassword(*email)
+
+		if errs != nil {
+			log.Fatalf("Could not retrieve account: %s", errs)
+		}
+
+		switch resp.StatusCode {
+		case 204:
+			fmt.Println("Password reset instructions sent to:", *email)
+		default:
+			log.Fatalf("Could not reset account password: %s", resp.Status)
+		}
+
+	}
+}
+
+// Private functions
+
 func printAccountDetail(a *Account) {
 	var output []string
 	fields := structs.New(a).Fields()

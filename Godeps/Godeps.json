@@ -5,7 +5,7 @@
 		{
 			"ImportPath": "code.google.com/p/go-uuid/uuid",
 			"Comment": "null-15",
-			"Rev": "35bc42037350f0078e3c974c6ea690f1926603ab"
+			"Rev": "'35bc42037350f0078e3c974c6ea690f1926603ab'"
 		},
 		{
 			"ImportPath": "github.com/Sirupsen/logrus",
@@ -22,23 +22,23 @@
 		},
 		{
 			"ImportPath": "github.com/kumoru/kumoru-sdk-go/RootCAs",
-			"Rev": "7b053aa2dc6856008dc7d813453983261cd8ba18"
+			"Rev": "9c1bb8a96f58fa337d40608ac906eaad05e2c942"
 		},
 		{
 			"ImportPath": "github.com/kumoru/kumoru-sdk-go/kumoru",
-			"Rev": "7b053aa2dc6856008dc7d813453983261cd8ba18"
+			"Rev": "9c1bb8a96f58fa337d40608ac906eaad05e2c942"
 		},
 		{
 			"ImportPath": "github.com/kumoru/kumoru-sdk-go/service/application",
-			"Rev": "7b053aa2dc6856008dc7d813453983261cd8ba18"
+			"Rev": "9c1bb8a96f58fa337d40608ac906eaad05e2c942"
 		},
 		{
 			"ImportPath": "github.com/kumoru/kumoru-sdk-go/service/authorization",
-			"Rev": "7b053aa2dc6856008dc7d813453983261cd8ba18"
+			"Rev": "9c1bb8a96f58fa337d40608ac906eaad05e2c942"
 		},
 		{
 			"ImportPath": "github.com/kumoru/kumoru-sdk-go/service/pools",
-			"Rev": "7b053aa2dc6856008dc7d813453983261cd8ba18"
+			"Rev": "9c1bb8a96f58fa337d40608ac906eaad05e2c942"
 		},
 		{
 			"ImportPath": "github.com/ryanuber/columnize",
@@ -47,7 +47,7 @@
 		},
 		{
 			"ImportPath": "golang.org/x/crypto/ssh/terminal",
-			"Rev": "c8b9e6388ef638d5a8a9d865c634befdc46a6784"
+			"Rev": "3760e016850398b85094c4c99e955b8c3dea5711"
 		},
 		{
 			"ImportPath": "gopkg.in/ini.v1",
