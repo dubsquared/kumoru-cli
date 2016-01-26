@@ -60,11 +60,11 @@ func List(cmd *cli.Cmd) {
 			log.Fatal(err)
 		}
 
-		printRegionBrief(p)
+		PrintRegionBrief(p)
 	}
 }
 
-func printRegionBrief(p []Region) {
+func PrintRegionBrief(p []Region) {
 	var output []string
 
 	output = append(output, fmt.Sprintf("Location | UUID | Status"))
