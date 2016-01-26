@@ -24,7 +24,7 @@ import (
 
 	"github.com/kumoru/kumoru-cli/accounts"
 	"github.com/kumoru/kumoru-cli/applications"
-	"github.com/kumoru/kumoru-cli/pools"
+	"github.com/kumoru/kumoru-cli/regions"
 	"github.com/kumoru/kumoru-cli/secrets"
 	"github.com/kumoru/kumoru-cli/tokens"
 )
@@ -40,7 +40,7 @@ func init() {
 func main() {
 	app := cli.App("kumoru", "Utility to interact with Kumoru services.")
 
-	app.Version("v version", "0.0.21")
+	app.Version("v version", "0.0.22")
 
 	app.Command("login", "Login action", tokens.Create)
 
@@ -59,12 +59,8 @@ func main() {
 		apps.Command("show", "Show application information", applications.Show)
 	})
 
-	app.Command("pools", "Pool actions", func(pool *cli.Cmd) {
-		pool.Command("archive", "Archive a pool", pools.Archive)
-		pool.Command("create", "Create a pool", pools.Create)
-		pool.Command("list", "List all pools", pools.List)
-		pool.Command("patch", "Update a pool", pools.Patch)
-		pool.Command("show", "Show pool information", pools.Show)
+	app.Command("regions", "Region actions", func(region *cli.Cmd) {
+		region.Command("list", "List all regions", regions.List)
 	})
 
 	app.Command("secrets", "secrets actions", func(sec *cli.Cmd) {
