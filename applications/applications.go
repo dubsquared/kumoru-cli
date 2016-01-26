@@ -32,26 +32,23 @@ import (
 )
 
 type App struct {
-	Addresses           []string               `json:"addresses"`
-	CreatedAt           string                 `json:"created_at"`
-	CurrentDeployments  map[string]string      `json:"current_deployments"`
-	Environment         map[string]string      `json:"environment"`
-	Hash                string                 `json:"hash"`
-	ImageUrl            string                 `json:"image_url"`
-	Location            string                 `json:"pool_location"`
-	Metadata            map[string]interface{} `json:"metadata"`
-	OrchestrationUrl    string                 `json:"orchestration_url"`
-	Name                string                 `json:"name"`
-	PoolUuid            string                 `json:"pool_uuid"`
-	Ports               []string               `json:"ports"`
-	ProviderCredentials string                 `json:"provider_credentials"`
-	Rules               map[string]int         `json:"rules"`
-	SSLPorts            []string               `json:"ssl_ports"`
-	Status              string                 `json:"status"`
-	UpdatedAt           string                 `json:"updated_at"`
-	Url                 string                 `json:"url"`
-	Uuid                string                 `json:"uuid"`
-	Certificates        map[string]string      `json:"certificates"`
+	Addresses          []string               `json:"addresses"`
+	CreatedAt          string                 `json:"created_at"`
+	CurrentDeployments map[string]string      `json:"current_deployments"`
+	Environment        map[string]string      `json:"environment"`
+	ImageUrl           string                 `json:"image_url"`
+	Location           string                 `json:"pool_location"`
+	Metadata           map[string]interface{} `json:"metadata"`
+	Name               string                 `json:"name"`
+	RegionUuid         string                 `json:"pool_uuid"`
+	Ports              []string               `json:"ports"`
+	Rules              map[string]int         `json:"rules"`
+	SSLPorts           []string               `json:"ssl_ports"`
+	Status             string                 `json:"status"`
+	UpdatedAt          string                 `json:"updated_at"`
+	Url                string                 `json:"url"`
+	Uuid               string                 `json:"uuid"`
+	Certificates       map[string]string      `json:"certificates"`
 }
 
 type Certificates struct {
@@ -160,9 +157,9 @@ func Deploy(cmd *cli.Cmd) {
 }
 
 func Create(cmd *cli.Cmd) {
-	poolUuid := cmd.String(cli.StringArg{
-		Name:      "POOL_UUID",
-		Desc:      "UUID of pool to create application in",
+	regionUuid := cmd.String(cli.StringArg{
+		Name:      "REGION_UUID",
+		Desc:      "UUID of region to create application in",
 		HideValue: true,
 	})
 
@@ -258,7 +255,7 @@ func Create(cmd *cli.Cmd) {
 
 		certificates := readCertificates(certificate, privateKey, certificateChain)
 
-		resp, body, errs := application.Create(*poolUuid, certificates, *name, *image, *providerCredentials, mData, eVars, *rules, *ports, *sslPorts)
+		resp, body, errs := application.Create(*regionUuid, certificates, *name, *image, *providerCredentials, mData, eVars, *rules, *ports, *sslPorts)
 		if errs != nil {
 			log.Fatalf("Could not create application: %s", errs)
 		}
