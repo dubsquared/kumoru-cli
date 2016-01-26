@@ -79,7 +79,7 @@ func Create(cmd *cli.Cmd) {
 		}
 
 		switch resp.StatusCode {
-		case 200:
+		case 201:
 			var account Account
 
 			err := json.Unmarshal([]byte(body), &account)
