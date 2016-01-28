@@ -35,6 +35,7 @@ type App struct {
 	Addresses          []string               `json:"addresses"`
 	CreatedAt          string                 `json:"created_at"`
 	CurrentDeployments map[string]string      `json:"current_deployments"`
+	DeploymentToken    string                 `json:"deployment_token"`
 	Environment        map[string]string      `json:"environment"`
 	ImageUrl           string                 `json:"image_url"`
 	Location           string                 `json:"pool_location"`
@@ -141,7 +142,26 @@ func Deploy(cmd *cli.Cmd) {
 	})
 
 	cmd.Action = func() {
-		resp, _, errs := application.Deploy(*uuid)
+
+		var a App
+
+		resp, body, errs := application.Show(*uuid) // TODO remove this duplication of application.Show() logic
+
+		if errs != nil {
+			log.Fatalf("Could not retrieve deployment token: %s", errs)
+		}
+
+		if resp.StatusCode != 200 {
+			log.Fatalf("Could not retrieve deployment token: %s", resp.Status)
+		}
+
+		err := json.Unmarshal([]byte(body), &a)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		resp, _, errs = application.Deploy(*uuid, a.DeploymentToken)
 
 		if errs != nil {
 			log.Fatalf("Could not deploy applications: %s", errs)
