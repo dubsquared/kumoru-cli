@@ -17,39 +17,94 @@ limitations under the License.
 package deployments
 
 import (
+	"encoding/json"
 	"fmt"
 
-	"github.com/jawher/mow.cli"
-	"github.com/kumoru/kumoru-sdk-go/service/application"
-
 	log "github.com/Sirupsen/logrus"
+
+	"github.com/fatih/structs"
+	"github.com/jawher/mow.cli"
+	"github.com/kumoru/kumoru-sdk-go/service/application/deployments"
+	"github.com/ryanuber/columnize"
 )
 
-func Deploy(cmd *cli.Cmd) {
+func List(cmd *cli.Cmd) {
 	uuid := cmd.String(cli.StringArg{
 		Name:      "UUID",
 		Desc:      "Application UUID",
 		HideValue: true,
 	})
 
-	cmd.Command("deploy", "Create a deployment", func(app *cli.Cmd) {
-		app.Action = func() {
-			resp, _, errs := application.Deploy(*uuid)
-			if errs != nil {
-				fmt.Println("Could not retrieve a list of applications.")
-			}
+	cmd.Action = func() {
+		d := deployments.Deployment{}
+		deployments, resp, errs := d.List(*uuid)
 
-			if resp.StatusCode != 202 {
-				log.Fatalf("Could not deploy application: %s", resp.Status)
-			}
-
-			fmt.Sprintf("Deploying application %s", *uuid)
-
+		if len(errs) > 0 {
+			log.Fatalf("Could not retrieve deployments: %s", errs[0])
 		}
-	})
-	cmd.Command("show", "Show deployment deployment information", func(app *cli.Cmd) {
-		app.Action = func() {
-			fmt.Println("STUB: show deployment action")
+
+		if resp.StatusCode != 200 {
+			log.Fatalf("Could not retrieve deployments: %s", resp.Status)
 		}
+
+		printDeploymentsBrief(*deployments)
+	}
+}
+
+func Show(cmd *cli.Cmd) {
+	applicationUuid := cmd.String(cli.StringArg{
+		Name:      "APPLICATION_UUID",
+		Desc:      "Application UUID",
+		HideValue: true,
 	})
+
+	uuid := cmd.String(cli.StringArg{
+		Name:      "DEPLOYMENT_UUID",
+		Desc:      "Deployment UUID",
+		HideValue: true,
+	})
+	cmd.Action = func() {
+		d := deployments.Deployment{}
+		deployment, resp, errs := d.Show(*applicationUuid, *uuid)
+
+		if len(errs) > 0 {
+			log.Fatalf("Could not retrieve deployment: %s", errs[0])
+		}
+
+		if resp.StatusCode != 200 {
+			log.Fatalf("Could not retrieve deployment: %s", resp.Status)
+		}
+
+		printDeploymentDetail(*deployment)
+	}
+}
+
+func printDeploymentsBrief(d []deployments.Deployment) {
+	var output []string
+
+	output = append(output, fmt.Sprintf("UUID | Created At | Image Tag | Image Id"))
+
+	for i := 0; i < len(d); i++ {
+		output = append(output, fmt.Sprintf("%s | %s | %s | %s", d[i].Uuid, d[i].CreatedAt, d[i].ImageTag, d[i].ImageId))
+	}
+
+	fmt.Println(columnize.SimpleFormat(output))
+}
+
+func printDeploymentDetail(d deployments.Deployment) {
+	var output []string
+	fields := structs.New(d).Fields()
+
+	fmt.Println("\nDeployment Details:\n")
+
+	for _, f := range fields {
+		if f.Name() == "Metadata" {
+			mdata, _ := json.Marshal(d.Metadata)
+			output = append(output, fmt.Sprintf("%s: |%s\n", f.Name(), mdata))
+		} else {
+			output = append(output, fmt.Sprintf("%s: |%v\n", f.Name(), f.Value()))
+		}
+	}
+
+	fmt.Println(columnize.SimpleFormat(output))
 }
