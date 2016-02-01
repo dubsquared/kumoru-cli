@@ -28,16 +28,17 @@ import (
 )
 
 type Region struct {
-	CreatedAt        string `json:"created_at"`
-	Credentials      string `json:"credentials"`
-	Key              string `json:"key"`
-	Location         string `json:"location"`
-	OrchestrationUrl string `json:"orchestration_url"`
-	StackId          string `json:"stack_id"`
-	Status           string `json:"status"`
-	UpdatedAt        string `json:"updated_at"`
-	Url              string `json:"url"`
-	Uuid             string `json:"uuid"`
+	CreatedAt          string `json:"created_at"`
+	Credentials        string `json:"credentials"`
+	Key                string `json:"key"`
+	Location           string `json:"location"`
+	OrchestrationUrl   string `json:"orchestration_url"`
+	OrchestrationToken string `json:"orchestration_token"`
+	StackId            string `json:"stack_id"`
+	Status             string `json:"status"`
+	UpdatedAt          string `json:"updated_at"`
+	Url                string `json:"url"`
+	Uuid               string `json:"uuid"`
 }
 
 func List(cmd *cli.Cmd) {
