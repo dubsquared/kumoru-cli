@@ -41,7 +41,7 @@ func init() {
 func main() {
 	app := cli.App("kumoru", "Utility to interact with Kumoru services.")
 
-	app.Version("v version", "0.0.25")
+	app.Version("v version", "0.0.26")
 
 	app.Command("login", "Login action", tokens.Create)
 
@@ -71,7 +71,7 @@ func main() {
 
 	app.Command("secrets", "secrets actions", func(sec *cli.Cmd) {
 		sec.Command("create", "Create secret", secrets.Create)
-		sec.Command("show", "Show secret information", secrets.Show)
+		sec.Command("show", "Show secret", secrets.Show)
 	})
 
 	app.Command("tokens", "Token actions", func(tkn *cli.Cmd) {
