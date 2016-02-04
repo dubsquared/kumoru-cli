@@ -24,6 +24,7 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/jawher/mow.cli"
+	"github.com/kumoru/kumoru-cli/utils"
 	"github.com/kumoru/kumoru-sdk-go/service/application/deployments"
 	"github.com/ryanuber/columnize"
 )
@@ -101,6 +102,10 @@ func printDeploymentDetail(d deployments.Deployment) {
 		if f.Name() == "Metadata" {
 			mdata, _ := json.Marshal(d.Metadata)
 			output = append(output, fmt.Sprintf("%s: |%s\n", f.Name(), mdata))
+		} else if f.Name() == "CreatedAt" {
+			output = append(output, fmt.Sprintf("%s: | %s\n", f.Name(), utils.FormatTime(d.CreatedAt+"Z")))
+		} else if f.Name() == "UpdatedAt" {
+			output = append(output, fmt.Sprintf("%s: | %s\n", f.Name(), utils.FormatTime(d.CreatedAt+"Z")))
 		} else {
 			output = append(output, fmt.Sprintf("%s: |%v\n", f.Name(), f.Value()))
 		}

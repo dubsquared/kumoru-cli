@@ -23,6 +23,7 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/jawher/mow.cli"
+	"github.com/kumoru/kumoru-cli/utils"
 	"github.com/kumoru/kumoru-sdk-go/service/authorization/secrets"
 	"github.com/ryanuber/columnize"
 )
@@ -86,7 +87,13 @@ func printSecretDetail(s secrets.Secret) {
 	fmt.Println("\nSecret Details:\n")
 
 	for _, f := range fields {
-		output = append(output, fmt.Sprintf("%s: |%v\n", f.Name(), f.Value()))
+		if f.Name() == "CreatedAt" {
+			output = append(output, fmt.Sprintf("%s: | %s\n", f.Name(), utils.FormatTime(s.CreatedAt+"Z")))
+		} else if f.Name() == "UpdatedAt" {
+			output = append(output, fmt.Sprintf("%s: | %s\n", f.Name(), utils.FormatTime(s.CreatedAt+"Z")))
+		} else {
+			output = append(output, fmt.Sprintf("%s: |%v\n", f.Name(), f.Value()))
+		}
 	}
 
 	fmt.Println(columnize.SimpleFormat(output))

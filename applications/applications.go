@@ -27,6 +27,7 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/jawher/mow.cli"
+	"github.com/kumoru/kumoru-cli/utils"
 	"github.com/kumoru/kumoru-sdk-go/service/application"
 	"github.com/ryanuber/columnize"
 )
@@ -473,6 +474,10 @@ func printAppDetail(a App) {
 			for k, v := range a.CurrentDeployments {
 				output = append(output, fmt.Sprintf("……|%s: %s", k, v))
 			}
+		} else if f.Name() == "CreatedAt" {
+			output = append(output, fmt.Sprintf("%s: | %s\n", f.Name(), utils.FormatTime(a.CreatedAt+"Z")))
+		} else if f.Name() == "UpdatedAt" {
+			output = append(output, fmt.Sprintf("%s: | %s\n", f.Name(), utils.FormatTime(a.CreatedAt+"Z")))
 		} else if f.Name() == "Metadata" {
 			mdata, _ := json.Marshal(a.Metadata)
 			output = append(output, fmt.Sprintf("%s: |%s\n", f.Name(), mdata))
