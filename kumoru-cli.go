@@ -41,7 +41,7 @@ func init() {
 func main() {
 	app := cli.App("kumoru", "Utility to interact with Kumoru services.")
 
-	app.Version("v version", "0.0.26")
+	app.Version("v version", "0.0.27")
 
 	app.Command("login", "Login action", tokens.Create)
 
