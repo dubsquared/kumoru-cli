@@ -464,34 +464,60 @@ func printAppBrief(a []App) {
 
 func printAppDetail(a App) {
 	var output []string
+	var outputEnv []string
 	fields := structs.New(a).Fields()
 
 	fmt.Println("\nApplication Details:\n")
 
 	for _, f := range fields {
-		if f.Name() == "CurrentDeployments" {
+		if f.Name() == "Addresses" {
+			output = append(output, fmt.Sprintf("%s:\n", f.Name()))
+			for _, v := range a.Addresses {
+				output = append(output, fmt.Sprintf("……|%s", v))
+			}
+		} else if f.Name() == "Certificates" {
+			output = append(output, fmt.Sprintf("%s:| Use \"--full\" to see certificates", f.Name()))
+			output = append(output, fmt.Sprintf("– PrivateKey: |%s\n", a.Certificates["private_key"]))
+		} else if f.Name() == "CreatedAt" {
+			output = append(output, fmt.Sprintf("%s: | %s\n", f.Name(), utils.FormatTime(a.CreatedAt+"Z")))
+		} else if f.Name() == "CurrentDeployments" {
 			output = append(output, fmt.Sprintf("%s:\n", f.Name()))
 			for k, v := range a.CurrentDeployments {
 				output = append(output, fmt.Sprintf("……|%s: %s", k, v))
 			}
-		} else if f.Name() == "CreatedAt" {
-			output = append(output, fmt.Sprintf("%s: | %s\n", f.Name(), utils.FormatTime(a.CreatedAt+"Z")))
-		} else if f.Name() == "UpdatedAt" {
-			output = append(output, fmt.Sprintf("%s: | %s\n", f.Name(), utils.FormatTime(a.CreatedAt+"Z")))
+		} else if f.Name() == "Environment" {
+			outputEnv = append(outputEnv, fmt.Sprintf("%s:\n", f.Name()))
+			for k, v := range a.Environment {
+				outputEnv = append(outputEnv, fmt.Sprintf("%s=%s", k, v))
+			}
 		} else if f.Name() == "Metadata" {
 			mdata, _ := json.Marshal(a.Metadata)
 			output = append(output, fmt.Sprintf("%s: |%s\n", f.Name(), mdata))
+		} else if f.Name() == "Ports" {
+			output = append(output, fmt.Sprintf("%s:\n", f.Name()))
+			for _, v := range a.Ports {
+				output = append(output, fmt.Sprintf("……|%s", v))
+			}
 		} else if f.Name() == "Rules" {
 			output = append(output, fmt.Sprintf("%s:\n", f.Name()))
 			for k, v := range a.Rules {
 				output = append(output, fmt.Sprintf("……|%s=%v", k, v))
 			}
+		} else if f.Name() == "SSLPorts" {
+			output = append(output, fmt.Sprintf("%s:\n", f.Name()))
+			for _, v := range a.SSLPorts {
+				output = append(output, fmt.Sprintf("……|%s", v))
+			}
+		} else if f.Name() == "UpdatedAt" {
+			output = append(output, fmt.Sprintf("%s: | %s\n", f.Name(), utils.FormatTime(a.CreatedAt+"Z")))
 		} else {
 			output = append(output, fmt.Sprintf("%s: |%v\n", f.Name(), f.Value()))
 		}
 	}
 
 	fmt.Println(columnize.SimpleFormat(output))
+	fmt.Println("\n")
+	fmt.Println(columnize.SimpleFormat(outputEnv))
 }
 
 func readCertificates(certificate, privateKey, certificateChain *string) string {
