@@ -509,7 +509,7 @@ func printAppDetail(a App) {
 				output = append(output, fmt.Sprintf("……|%s", v))
 			}
 		} else if f.Name() == "UpdatedAt" {
-			output = append(output, fmt.Sprintf("%s: | %s\n", f.Name(), utils.FormatTime(a.CreatedAt+"Z")))
+			output = append(output, fmt.Sprintf("%s: | %s\n", f.Name(), utils.FormatTime(a.UpdatedAt+"Z")))
 		} else {
 			output = append(output, fmt.Sprintf("%s: |%v\n", f.Name(), f.Value()))
 		}

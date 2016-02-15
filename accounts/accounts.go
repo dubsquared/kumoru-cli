@@ -164,7 +164,7 @@ func printAccountDetail(a *Account) {
 		if f.Name() == "CreatedAt" {
 			output = append(output, fmt.Sprintf("%s: | %s\n", f.Name(), utils.FormatTime(a.CreatedAt+"Z")))
 		} else if f.Name() == "UpdatedAt" {
-			output = append(output, fmt.Sprintf("%s: | %s\n", f.Name(), utils.FormatTime(a.CreatedAt+"Z")))
+			output = append(output, fmt.Sprintf("%s: | %s\n", f.Name(), utils.FormatTime(a.UpdatedAt+"Z")))
 		} else {
 			output = append(output, fmt.Sprintf("%s: |%s\n", f.Name(), f.Value()))
 		}

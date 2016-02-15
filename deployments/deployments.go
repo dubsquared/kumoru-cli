@@ -104,8 +104,6 @@ func printDeploymentDetail(d deployments.Deployment) {
 			output = append(output, fmt.Sprintf("%s: |%s\n", f.Name(), mdata))
 		} else if f.Name() == "CreatedAt" {
 			output = append(output, fmt.Sprintf("%s: | %s\n", f.Name(), utils.FormatTime(d.CreatedAt+"Z")))
-		} else if f.Name() == "UpdatedAt" {
-			output = append(output, fmt.Sprintf("%s: | %s\n", f.Name(), utils.FormatTime(d.CreatedAt+"Z")))
 		} else {
 			output = append(output, fmt.Sprintf("%s: |%v\n", f.Name(), f.Value()))
 		}

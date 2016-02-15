@@ -90,7 +90,7 @@ func printSecretDetail(s secrets.Secret) {
 		if f.Name() == "CreatedAt" {
 			output = append(output, fmt.Sprintf("%s: | %s\n", f.Name(), utils.FormatTime(s.CreatedAt+"Z")))
 		} else if f.Name() == "UpdatedAt" {
-			output = append(output, fmt.Sprintf("%s: | %s\n", f.Name(), utils.FormatTime(s.CreatedAt+"Z")))
+			output = append(output, fmt.Sprintf("%s: | %s\n", f.Name(), utils.FormatTime(s.UpdatedAt+"Z")))
 		} else {
 			output = append(output, fmt.Sprintf("%s: |%v\n", f.Name(), f.Value()))
 		}
