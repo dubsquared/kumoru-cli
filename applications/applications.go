@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 
 	log "github.com/Sirupsen/logrus"
 
@@ -84,6 +85,8 @@ func Archive(cmd *cli.Cmd) {
 func List(cmd *cli.Cmd) {
 	var a []App
 
+	all := cmd.BoolOpt("a all", false, "List all applications, including archived")
+
 	cmd.Action = func() {
 		resp, body, errs := application.List()
 
@@ -101,7 +104,7 @@ func List(cmd *cli.Cmd) {
 			log.Fatal(err)
 		}
 
-		printAppBrief(a)
+		printAppBrief(a, *all)
 	}
 }
 
@@ -450,13 +453,17 @@ func metaData(meta string, labels []string) string {
 	return fmt.Sprintf("%s", mdata)
 }
 
-func printAppBrief(a []App) {
+func printAppBrief(a []App, showAll bool) {
 	var output []string
 
 	output = append(output, fmt.Sprintf("Name | Uuid | Status | Location | Ports | SSL Ports | Rules"))
 
 	for i := 0; i < len(a); i++ {
-		output = append(output, fmt.Sprintf("%s | %s | %s | %s | %s | %s | %s", a[i].Name, a[i].Uuid, a[i].Status, a[i].Location, a[i].Ports, a[i].SSLPorts, fmtRules(a[i].Rules)))
+		if showAll {
+			output = append(output, fmt.Sprintf("%s | %s | %s | %s | %s | %s | %s", a[i].Name, a[i].Uuid, a[i].Status, a[i].Location, a[i].Ports, a[i].SSLPorts, fmtRules(a[i].Rules)))
+		} else if strings.ToLower(string(a[i].Status)) != "archived" {
+			output = append(output, fmt.Sprintf("%s | %s | %s | %s | %s | %s | %s", a[i].Name, a[i].Uuid, a[i].Status, a[i].Location, a[i].Ports, a[i].SSLPorts, fmtRules(a[i].Rules)))
+		}
 	}
 
 	fmt.Println(columnize.SimpleFormat(output))
