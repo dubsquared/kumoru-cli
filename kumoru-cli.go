@@ -39,12 +39,13 @@ func init() {
 	log.SetOutput(os.Stderr)
 }
 
-var Version = "No Version Provided"
+var Version = "0.0.28"
+var GitVersion = "No Version Provided"
 var BuildStamp = "No Build Stamp Provided"
 
 func main() {
 
-	BuildVersion := fmt.Sprintf("Version: %s \nUTC Build Time: %s", Version, BuildStamp)
+	BuildVersion := fmt.Sprintf("Version: %s \nGit Commit Hash: %s \nUTC Build Time: %s", Version, GitVersion, BuildStamp)
 
 	app := cli.App("kumoru", "Utility to interact with Kumoru services.")
 
