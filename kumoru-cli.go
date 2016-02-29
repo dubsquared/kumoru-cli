@@ -17,6 +17,7 @@ limitations under the License.
 package main
 
 import (
+	"fmt"
 	"os"
 
 	log "github.com/Sirupsen/logrus"
@@ -38,10 +39,16 @@ func init() {
 	log.SetOutput(os.Stderr)
 }
 
+var Version = "No Version Provided"
+var BuildStamp = "No Build Stamp Provided"
+
 func main() {
+
+	BuildVersion := fmt.Sprintf("Version: %s \nUTC Build Time: %s", Version, BuildStamp)
+
 	app := cli.App("kumoru", "Utility to interact with Kumoru services.")
 
-	app.Version("v version", "0.0.27")
+	app.Version("v version", BuildVersion)
 
 	app.Command("login", "Login action", tokens.Create)
 

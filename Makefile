@@ -1,13 +1,15 @@
+BUILD_FLAGS :=  "-X main.BuildStamp=`date -u '+%Y-%m-%d_%I:%M:%S%p'` -X main.Version=`git rev-parse HEAD`"
+
 default: clean build
 
 linux-binary:
-	GO15VENDOREXPERIMENT=1 CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o builds/linux/kumoru kumoru-cli.go
+	GO15VENDOREXPERIMENT=1 CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags $(BUILD_FLAGS) -o builds/linux/kumoru kumoru-cli.go
 
 osx-binary:
-	GO15VENDOREXPERIMENT=1 CGO_ENABLED=0 GOOS=darwin go build -a -installsuffix cgo -o builds/osx/kumoru kumoru-cli.go
+	GO15VENDOREXPERIMENT=1 CGO_ENABLED=0 GOOS=darwin go build -a -installsuffix cgo -ldflags $(BUILD_FLAGS) -o builds/osx/kumoru kumoru-cli.go
 
 build:
-	GO15VENDOREXPERIMENT=1 go build -a -o kumoru kumoru-cli.go
+	GO15VENDOREXPERIMENT=1 go build -a -ldflags $(BUILD_FLAGS) -o kumoru kumoru-cli.go
 
 install: build mv-bin
 
