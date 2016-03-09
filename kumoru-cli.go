@@ -26,7 +26,7 @@ import (
 	"github.com/kumoru/kumoru-cli/accounts"
 	"github.com/kumoru/kumoru-cli/applications"
 	"github.com/kumoru/kumoru-cli/deployments"
-	"github.com/kumoru/kumoru-cli/regions"
+	"github.com/kumoru/kumoru-cli/locations"
 	"github.com/kumoru/kumoru-cli/secrets"
 	"github.com/kumoru/kumoru-cli/tokens"
 )
@@ -73,11 +73,11 @@ func main() {
 		apps.Command("show", "Show deployment information", deployments.Show)
 	})
 
-	app.Command("regions", "Region actions", func(region *cli.Cmd) {
-		region.Command("list", "List all regions", regions.List)
+	app.Command("locations", "Location actions", func(location *cli.Cmd) {
+		location.Command("list", "List all locations", locations.List)
 	})
 
-	app.Command("secrets", "secrets actions", func(sec *cli.Cmd) {
+	app.Command("secrets", "Secrets actions", func(sec *cli.Cmd) {
 		sec.Command("create", "Create secret", secrets.Create)
 		sec.Command("show", "Show secret", secrets.Show)
 	})

@@ -44,7 +44,7 @@ type App struct {
 	Location           string                 `json:"pool_location"`
 	Metadata           map[string]interface{} `json:"metadata"`
 	Name               string                 `json:"name"`
-	RegionUUID         string                 `json:"pool_uuid"`
+	LocationUuid       string                 `json:"pool_uuid"`
 	Ports              []string               `json:"ports"`
 	Rules              map[string]int         `json:"rules"`
 	SSLPorts           []string               `json:"ssl_ports"`
@@ -183,9 +183,9 @@ func Deploy(cmd *cli.Cmd) {
 }
 
 func Create(cmd *cli.Cmd) {
-	regionUuid := cmd.String(cli.StringArg{
-		Name:      "REGION_UUID",
-		Desc:      "UUID of region to create application in",
+	locationUuid := cmd.String(cli.StringArg{
+		Name:      "LOCATION_UUID",
+		Desc:      "UUID of location to create application in",
 		HideValue: true,
 	})
 
@@ -281,7 +281,7 @@ func Create(cmd *cli.Cmd) {
 
 		certificates := readCertificates(certificate, privateKey, certificateChain)
 
-		resp, body, errs := application.Create(*regionUuid, certificates, *name, *image, *providerCredentials, mData, eVars, *rules, *ports, *sslPorts)
+		resp, body, errs := application.Create(*locationUuid, certificates, *name, *image, *providerCredentials, mData, eVars, *rules, *ports, *sslPorts)
 		if errs != nil {
 			log.Fatalf("Could not create application: %s", errs)
 		}
