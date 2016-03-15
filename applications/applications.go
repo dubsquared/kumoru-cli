@@ -33,27 +33,29 @@ import (
 	"github.com/ryanuber/columnize"
 )
 
+// App struct to describe an application
 type App struct {
 	Addresses          []string               `json:"addresses"`
 	CreatedAt          string                 `json:"created_at"`
 	CurrentDeployments map[string]string      `json:"current_deployments"`
 	DeploymentToken    string                 `json:"deployment_token"`
 	Environment        map[string]string      `json:"environment"`
-	ImageUrl           string                 `json:"image_url"`
+	ImageURL           string                 `json:"image_url"`
 	Location           string                 `json:"pool_location"`
 	Metadata           map[string]interface{} `json:"metadata"`
 	Name               string                 `json:"name"`
-	RegionUuid         string                 `json:"pool_uuid"`
+	RegionUUID         string                 `json:"pool_uuid"`
 	Ports              []string               `json:"ports"`
 	Rules              map[string]int         `json:"rules"`
 	SSLPorts           []string               `json:"ssl_ports"`
 	Status             string                 `json:"status"`
 	UpdatedAt          string                 `json:"updated_at"`
-	Url                string                 `json:"url"`
-	Uuid               string                 `json:"uuid"`
+	URL                string                 `json:"url"`
+	UUID               string                 `json:"uuid"`
 	Certificates       map[string]string      `json:"certificates"`
 }
 
+// Certificates struct
 type Certificates struct {
 	Certificate      string `json:"certificate,omitempty"`
 	PrivateKey       string `json:"private_key,omitempty"`
@@ -459,14 +461,26 @@ func printAppBrief(a []App, showAll bool) {
 	output = append(output, fmt.Sprintf("Name | Uuid | Status | Location | Ports | SSL Ports | Rules"))
 
 	for i := 0; i < len(a); i++ {
+
 		if showAll {
-			output = append(output, fmt.Sprintf("%s | %s | %s | %s | %s | %s | %s", a[i].Name, a[i].Uuid, a[i].Status, a[i].Location, a[i].Ports, a[i].SSLPorts, fmtRules(a[i].Rules)))
+			output = append(output, fmt.Sprintf("%s | %s | %s | %s | %s | %s | %s", a[i].Name, a[i].UUID, a[i].Status, a[i].Location, fmtPorts(a[i].Ports), fmtPorts(a[i].SSLPorts), fmtRules(a[i].Rules)))
 		} else if strings.ToLower(string(a[i].Status)) != "archived" {
-			output = append(output, fmt.Sprintf("%s | %s | %s | %s | %s | %s | %s", a[i].Name, a[i].Uuid, a[i].Status, a[i].Location, a[i].Ports, a[i].SSLPorts, fmtRules(a[i].Rules)))
+			output = append(output, fmt.Sprintf("%s | %s | %s | %s | %s | %s | %s", a[i].Name, a[i].UUID, a[i].Status, a[i].Location, fmtPorts(a[i].Ports), fmtPorts(a[i].SSLPorts), fmtRules(a[i].Rules)))
 		}
 	}
 
 	fmt.Println(columnize.SimpleFormat(output))
+}
+
+func fmtPorts(ports []string) string {
+	if len(ports) > 0 {
+		r := ""
+		for _, v := range ports {
+			r += fmt.Sprintf("%s ", v)
+		}
+		return r
+	}
+	return ""
 }
 
 func printAppDetail(a App) {
@@ -474,7 +488,7 @@ func printAppDetail(a App) {
 	var outputEnv []string
 	fields := structs.New(a).Fields()
 
-	fmt.Println("\nApplication Details:\n")
+	fmt.Println("\nApplication Details:")
 
 	for _, f := range fields {
 		if f.Name() == "Addresses" {
@@ -501,7 +515,7 @@ func printAppDetail(a App) {
 			mdata, _ := json.Marshal(a.Metadata)
 			output = append(output, fmt.Sprintf("%s: |%s\n", f.Name(), mdata))
 		} else if f.Name() == "Ports" {
-			output = append(output, fmt.Sprintf("%s:\n", f.Name()))
+			output = append(output, fmt.Sprintf("\n"))
 			for _, v := range a.Ports {
 				output = append(output, fmt.Sprintf("……|%s", v))
 			}
@@ -523,7 +537,6 @@ func printAppDetail(a App) {
 	}
 
 	fmt.Println(columnize.SimpleFormat(output))
-	fmt.Println("\n")
 	fmt.Println(columnize.SimpleFormat(outputEnv))
 }
 
