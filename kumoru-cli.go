@@ -39,7 +39,7 @@ func init() {
 	log.SetOutput(os.Stderr)
 }
 
-var Version = "0.0.28"
+var Version = "0.0.30"
 var GitVersion = "No Version Provided"
 var BuildStamp = "No Build Stamp Provided"
 
