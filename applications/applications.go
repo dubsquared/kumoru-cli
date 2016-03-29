@@ -41,10 +41,9 @@ type App struct {
 	DeploymentToken    string                 `json:"deployment_token"`
 	Environment        map[string]string      `json:"environment"`
 	ImageURL           string                 `json:"image_url"`
-	Location           string                 `json:"pool_location"`
+	Location           map[string]string      `json:"location"`
 	Metadata           map[string]interface{} `json:"metadata"`
 	Name               string                 `json:"name"`
-	LocationUuid       string                 `json:"pool_uuid"`
 	Ports              []string               `json:"ports"`
 	Rules              map[string]int         `json:"rules"`
 	SSLPorts           []string               `json:"ssl_ports"`
@@ -52,6 +51,7 @@ type App struct {
 	UpdatedAt          string                 `json:"updated_at"`
 	URL                string                 `json:"url"`
 	UUID               string                 `json:"uuid"`
+	Version            string                 `json:"version"`
 	Certificates       map[string]string      `json:"certificates"`
 }
 
@@ -463,9 +463,9 @@ func printAppBrief(a []App, showAll bool) {
 	for i := 0; i < len(a); i++ {
 
 		if showAll {
-			output = append(output, fmt.Sprintf("%s | %s | %s | %s | %s | %s | %s", a[i].Name, a[i].UUID, a[i].Status, a[i].Location, fmtPorts(a[i].Ports), fmtPorts(a[i].SSLPorts), fmtRules(a[i].Rules)))
+			output = append(output, fmt.Sprintf("%s | %s | %s | %s | %s | %s | %s", a[i].Name, a[i].UUID, a[i].Status, a[i].Location["identifier"], fmtPorts(a[i].Ports), fmtPorts(a[i].SSLPorts), fmtRules(a[i].Rules)))
 		} else if strings.ToLower(string(a[i].Status)) != "archived" {
-			output = append(output, fmt.Sprintf("%s | %s | %s | %s | %s | %s | %s", a[i].Name, a[i].UUID, a[i].Status, a[i].Location, fmtPorts(a[i].Ports), fmtPorts(a[i].SSLPorts), fmtRules(a[i].Rules)))
+			output = append(output, fmt.Sprintf("%s | %s | %s | %s | %s | %s | %s", a[i].Name, a[i].UUID, a[i].Status, a[i].Location["identifier"], fmtPorts(a[i].Ports), fmtPorts(a[i].SSLPorts), fmtRules(a[i].Rules)))
 		}
 	}
 

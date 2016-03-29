@@ -26,6 +26,55 @@ import (
 	"github.com/ryanuber/columnize"
 )
 
+func Add(cmd *cli.Cmd) {
+
+	identifier := cmd.String(cli.StringArg{
+		Name:      "LOCATION",
+		Desc:      "location to be added to your current role(i.e. us-east-1)",
+		HideValue: true,
+	})
+
+	cmd.Action = func() {
+		l := pools.Location{}
+		l.Identifier = *identifier
+
+		location, resp, errs := l.Create()
+
+		if len(errs) > 0 {
+			log.Fatalf("Could not add new location: %s", errs)
+		}
+
+		if resp.StatusCode != 201 {
+			log.Fatalf("Cloud not add new location: %s", resp.Status)
+		}
+
+		PrintLocationBrief([]pools.Location{*location})
+	}
+}
+
+func Archive(cmd *cli.Cmd) {
+	uuid := cmd.String(cli.StringArg{
+		Name:      "UUID",
+		Desc:      "Region UUID",
+		HideValue: true,
+	})
+
+	cmd.Action = func() {
+		var l *pools.Location
+		l, resp, errs := l.Delete(*uuid)
+
+		if len(errs) > 0 {
+			log.Fatalf("Could not archive location: %s", errs)
+		}
+
+		if resp.StatusCode != 202 {
+			log.Fatalf("Could not archive location: %s", resp.Status)
+		}
+
+		fmt.Sprintf("Location %s accepted for archival\n", *uuid)
+	}
+}
+
 func List(cmd *cli.Cmd) {
 	cmd.Action = func() {
 		l := pools.Location{}
@@ -49,7 +98,7 @@ func PrintLocationBrief(l []pools.Location) {
 	output = append(output, fmt.Sprintf("Location | Provider | UUID | Status"))
 
 	for i := 0; i < len(l); i++ {
-		output = append(output, fmt.Sprintf("%s | %s | %s| %s", l[i].Locate, l[i].Provider, l[i].Uuid, l[i].Status))
+		output = append(output, fmt.Sprintf("%s | %s | %s| %s", l[i].Identifier, l[i].Provider, l[i].Uuid, l[i].Status))
 	}
 
 	fmt.Println(columnize.SimpleFormat(output))

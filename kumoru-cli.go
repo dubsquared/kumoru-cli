@@ -39,7 +39,7 @@ func init() {
 	log.SetOutput(os.Stderr)
 }
 
-var Version = "0.0.30"
+var Version = "0.1.0"
 var GitVersion = "No Version Provided"
 var BuildStamp = "No Build Stamp Provided"
 
@@ -74,6 +74,8 @@ func main() {
 	})
 
 	app.Command("locations", "Location actions", func(location *cli.Cmd) {
+		location.Command("add", "Add location to current role", locations.Add)
+		location.Command("archive", "Archive specific location (WARNING: destructive)", locations.Archive)
 		location.Command("list", "List all locations", locations.List)
 	})
 
