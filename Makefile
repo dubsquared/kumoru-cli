@@ -22,6 +22,7 @@ clean:
 	rm -f kumoru
 	rm -f builds/osx/kumoru
 	rm -f builds/linux/kumoru
+	rm -f builds/windows/kumoru
 
 restore:
 	GO15VENDOREXPERIMENT=1 godep restore
