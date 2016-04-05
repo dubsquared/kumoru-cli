@@ -8,6 +8,8 @@ linux-binary:
 osx-binary:
 	GO15VENDOREXPERIMENT=1 CGO_ENABLED=0 GOOS=darwin go build -a -installsuffix cgo -ldflags $(BUILD_FLAGS) -o builds/osx/kumoru kumoru-cli.go
 
+windows-binary:
+	GO15VENDOREXPERIMENT=1 CGO_ENABLED=0 GOOS=windows go build -a -installsuffix cgo -ldflags $(BUILD_FLAGS) -o builds/windows/kumoru kumoru-cli.go
 build:
 	GO15VENDOREXPERIMENT=1 go build -a -ldflags $(BUILD_FLAGS) -o kumoru kumoru-cli.go
 
@@ -31,4 +33,4 @@ depsave:
 test:
 	GO15VENDOREXPERIMENT=1 go test -cover ./...
 
-release: clean restore test osx-binary linux-binary
+release: clean restore test osx-binary linux-binary windows-binary
