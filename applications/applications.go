@@ -458,7 +458,7 @@ func metaData(meta string, labels []string) string {
 func printAppBrief(a []App, showAll bool) {
 	var output []string
 
-	output = append(output, fmt.Sprintf("Name | Uuid | Status | Location | Ports | SSL Ports | Rules"))
+	output = append(output, fmt.Sprintf("Name | UUID | Status | Location | Ports | SSL Ports | Rules"))
 
 	for i := 0; i < len(a); i++ {
 
@@ -511,11 +511,13 @@ func printAppDetail(a App) {
 			for k, v := range a.Environment {
 				outputEnv = append(outputEnv, fmt.Sprintf("%s=%s", k, v))
 			}
+		} else if f.Name() == "Location" {
+			output = append(output, fmt.Sprintf("%s: |Identifier: %s\t UUID: %s\n", f.Name(), a.Location["identifier"], a.Location["uuid"]))
 		} else if f.Name() == "Metadata" {
 			mdata, _ := json.Marshal(a.Metadata)
 			output = append(output, fmt.Sprintf("%s: |%s\n", f.Name(), mdata))
 		} else if f.Name() == "Ports" {
-			output = append(output, fmt.Sprintf("\n"))
+			output = append(output, fmt.Sprintf("%s:\n", f.Name()))
 			for _, v := range a.Ports {
 				output = append(output, fmt.Sprintf("……|%s", v))
 			}
@@ -537,6 +539,7 @@ func printAppDetail(a App) {
 	}
 
 	fmt.Println(columnize.SimpleFormat(output))
+	fmt.Println("\n")
 	fmt.Println(columnize.SimpleFormat(outputEnv))
 }
 
