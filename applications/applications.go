@@ -239,7 +239,7 @@ func Create(cmd *cli.Cmd) {
 
 	enVars := cmd.Strings(cli.StringsOpt{
 		Name:      "e env",
-		Desc:      "Environment variable",
+		Desc:      "Environment variable (i.e. MYSQL_PASSWORD=complexpassword",
 		HideValue: true,
 	})
 
@@ -263,7 +263,7 @@ func Create(cmd *cli.Cmd) {
 
 	meta := cmd.String(cli.StringOpt{
 		Name:      "m metadata",
-		Desc:      "Metadata associated with the application being created (i.e. location=cloud)",
+		Desc:      "Metadata associated with the application being created. Must be JSON formatted.",
 		HideValue: true,
 	})
 
@@ -357,7 +357,7 @@ func Patch(cmd *cli.Cmd) {
 
 	enVars := cmd.Strings(cli.StringsOpt{
 		Name:      "e env",
-		Desc:      "Environment variable",
+		Desc:      "Environment variable (i.e. MYSQL_PASSWORD=complexpassword",
 		HideValue: true,
 	})
 
@@ -381,7 +381,7 @@ func Patch(cmd *cli.Cmd) {
 
 	meta := cmd.String(cli.StringOpt{
 		Name:      "m metadata",
-		Desc:      "Metadata associated with the application being created (i.e. location=cloud)",
+		Desc:      "Metadata associated with the application being created. Must be JSON formatted.",
 		HideValue: true,
 	})
 
