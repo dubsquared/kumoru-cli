@@ -95,10 +95,10 @@ func List(cmd *cli.Cmd) {
 func PrintLocationBrief(l []pools.Location) {
 	var output []string
 
-	output = append(output, fmt.Sprintf("Location | Provider | UUID | Status"))
+	output = append(output, fmt.Sprintf("Location | Provider | UUID | Status | Aggregrate Resources"))
 
 	for i := 0; i < len(l); i++ {
-		output = append(output, fmt.Sprintf("%s | %s | %s| %s", l[i].Identifier, l[i].Provider, l[i].Uuid, l[i].Status))
+		output = append(output, fmt.Sprintf("%s | %s | %s| %s| %v vCPU, %vGB RAM", l[i].Identifier, l[i].Provider, l[i].Uuid, l[i].Status, l[i].AggregateResources["cpu"], l[i].AggregateResources["ram"]))
 	}
 
 	fmt.Println(columnize.SimpleFormat(output))

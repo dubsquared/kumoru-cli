@@ -51,7 +51,7 @@ type App struct {
 	UpdatedAt          string                 `json:"updated_at"`
 	URL                string                 `json:"url"`
 	UUID               string                 `json:"uuid"`
-	Version            string                 `json:"version"`
+	ApiVersion         string                 `json:"api_version"`
 	Certificates       map[string]string      `json:"certificates"`
 }
 
