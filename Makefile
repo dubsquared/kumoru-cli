@@ -1,4 +1,4 @@
-BUILD_FLAGS :=  "-X main.BuildStamp=`date -u '+%Y-%m-%d_%I:%M:%S%p'` -X main.GitVersion=`git rev-parse HEAD`"
+BUILD_FLAGS :=  "-s -w -X main.BuildStamp=`date -u '+%Y-%m-%d_%I:%M:%S%p'` -X main.GitVersion=`git rev-parse HEAD`"
 
 default: clean build
 
