@@ -17,7 +17,6 @@ limitations under the License.
 package accounts
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"reflect"
@@ -33,14 +32,7 @@ import (
 	"golang.org/x/crypto/ssh/terminal"
 )
 
-type Account struct {
-	CreatedAt string `json:"created_at"`
-	Email     string `json:"email"`
-	GivenName string `json:"given_name"`
-	Surname   string `json:"surname"`
-	UpdatedAt string `json:"updated_at"`
-}
-
+//Create an Account.
 func Create(cmd *cli.Cmd) {
 	email := cmd.String(cli.StringArg{
 		Name:      "EMAIL",
@@ -73,29 +65,27 @@ func Create(cmd *cli.Cmd) {
 			fmt.Println("\n")
 		}
 
-		resp, body, errs := authorization.CreateAcct(*email, *fName, *lName, *password)
-
-		if errs != nil {
-			log.Fatalf("Could not create account: %s", errs)
+		l := authorization.Account{
+			Email:     *email,
+			GivenName: *fName,
+			Surname:   *lName,
 		}
 
-		switch resp.StatusCode {
-		case 201:
-			var account Account
+		account, resp, errs := l.CreateAcct(*password)
 
-			err := json.Unmarshal([]byte(body), &account)
+		if len(errs) > 0 {
+			log.Fatalf("Could not create account: %s", errs[0])
+		}
 
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			printAccountDetail(&account)
-		default:
+		if resp.StatusCode != 201 {
 			log.Fatalf("Could not create account: %s", resp.Status)
 		}
+
+		printAccountDetail(account)
 	}
 }
 
+//Show displays the details of an Account.
 func Show(cmd *cli.Cmd) {
 	email := cmd.String(cli.StringArg{
 		Name:      "EMAIL",
@@ -103,31 +93,26 @@ func Show(cmd *cli.Cmd) {
 		HideValue: true,
 	})
 
-	var account Account
-
 	cmd.Action = func() {
-		resp, body, errs := authorization.ShowAcct(*email)
-
-		if errs != nil {
-			log.Fatalf("Could not retrieve account: %s", errs)
+		a := authorization.Account{
+			Email: *email,
 		}
 
-		switch resp.StatusCode {
-		case 200:
-			err := json.Unmarshal([]byte(body), &account)
+		account, resp, errs := a.ShowAcct()
 
-			if err != nil {
-				log.Fatal(err)
-			}
+		if len(errs) > 0 {
+			log.Fatalf("Could not retrieve account: %s", errs[0])
+		}
 
-			printAccountDetail(&account)
-		default:
+		if resp.StatusCode != 200 {
 			log.Fatalf("Could not retrieve account: %s", resp.Status)
 		}
 
+		printAccountDetail(account)
 	}
 }
 
+//ResetPassword requests the password reset operation to start.
 func ResetPassword(cmd *cli.Cmd) {
 	email := cmd.String(cli.StringArg{
 		Name:      "EMAIL",
@@ -136,25 +121,28 @@ func ResetPassword(cmd *cli.Cmd) {
 	})
 
 	cmd.Action = func() {
-		resp, _, errs := authorization.ResetPassword(*email)
-
-		if errs != nil {
-			log.Fatalf("Could not retrieve account: %s", errs)
+		a := authorization.Account{
+			Email: *email,
 		}
 
-		switch resp.StatusCode {
-		case 204:
-			fmt.Println("Password reset instructions sent to:", *email)
-		default:
+		account, resp, errs := a.ResetPassword()
+
+		if len(errs) > 0 {
+			log.Fatalf("Could not retrieve account: %s", errs[0])
+		}
+
+		if resp.StatusCode != 204 {
 			log.Fatalf("Could not reset account password: %s", resp.Status)
 		}
 
+		fmt.Println("Password reset instructions sent to:", account.Email)
 	}
 }
 
-// Private functions
+//Private functions
 
-func printAccountDetail(a *Account) {
+//Prints details of an Account. Fields are formatted to be more human readable.
+func printAccountDetail(a *authorization.Account) {
 	var output []string
 	fields := structs.New(a).Fields()
 
@@ -173,6 +161,7 @@ func printAccountDetail(a *Account) {
 	fmt.Println(columnize.SimpleFormat(output))
 }
 
+//passwordPrompt prompts user to enter password twice and that the two entries are equivalent.
 func passwordPrompt() string {
 	fmt.Print("Enter password: ")
 	password, errs := terminal.ReadPassword(0)
