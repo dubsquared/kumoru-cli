@@ -16,9 +16,40 @@ limitations under the License.
 
 package applications
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
-func TestReadCertificatesEmpty(t *testing.T) {
+func TestTransformRules(t *testing.T) {
+	cases := []struct {
+		rules       []string
+		expected    map[string]int
+		expectedErr error
+	}{
+		{
+			rules:       []string{"latest=100"},
+			expected:    map[string]int{"latest": 100},
+			expectedErr: nil,
+		},
+		{
+			rules:       []string{"latest=50", "alpha=50"},
+			expected:    map[string]int{"latest": 50, "alpha": 50},
+			expectedErr: nil,
+		},
+	}
+
+	for _, c := range cases {
+		result := transformRules(&c.rules)
+
+		if !reflect.DeepEqual(result, c.expected) {
+			t.Errorf("result == %v, expected %v", result, c.expected)
+		}
+	}
+
+}
+
+/*func TestReadCertificatesEmpty(t *testing.T) {
 
 	var cert, key, ca string
 	expected := ""
@@ -28,8 +59,7 @@ func TestReadCertificatesEmpty(t *testing.T) {
 	if result != expected {
 		t.Errorf("result == %v, want %v", result, expected)
 	}
-}
-
+}*/
 //TODO Implement following test case with file reads
 /*func TestReadCertificatesExists(t *testing.T) {
 

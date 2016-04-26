@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strconv"
 	"strings"
 
 	log "github.com/Sirupsen/logrus"
@@ -33,35 +34,7 @@ import (
 	"github.com/ryanuber/columnize"
 )
 
-// App struct to describe an application
-type App struct {
-	Addresses          []string               `json:"addresses"`
-	CreatedAt          string                 `json:"created_at"`
-	CurrentDeployments map[string]string      `json:"current_deployments"`
-	DeploymentToken    string                 `json:"deployment_token"`
-	Environment        map[string]string      `json:"environment"`
-	ImageURL           string                 `json:"image_url"`
-	Location           map[string]string      `json:"location"`
-	Metadata           map[string]interface{} `json:"metadata"`
-	Name               string                 `json:"name"`
-	Ports              []string               `json:"ports"`
-	Rules              map[string]int         `json:"rules"`
-	SSLPorts           []string               `json:"ssl_ports"`
-	Status             string                 `json:"status"`
-	UpdatedAt          string                 `json:"updated_at"`
-	URL                string                 `json:"url"`
-	UUID               string                 `json:"uuid"`
-	ApiVersion         string                 `json:"api_version"`
-	Certificates       map[string]string      `json:"certificates"`
-}
-
-// Certificates struct
-type Certificates struct {
-	Certificate      string `json:"certificate,omitempty"`
-	PrivateKey       string `json:"private_key,omitempty"`
-	CertificateChain string `json:"certificate_chain,omitempty"`
-}
-
+//Archive an Application
 func Archive(cmd *cli.Cmd) {
 	uuid := cmd.String(cli.StringArg{
 		Name:      "UUID",
@@ -70,7 +43,11 @@ func Archive(cmd *cli.Cmd) {
 	})
 
 	cmd.Action = func() {
-		resp, _, errs := application.Delete(*uuid)
+		app := application.Application{
+			UUID: *uuid,
+		}
+
+		_, resp, errs := app.Delete()
 
 		if errs != nil {
 			log.Fatalf("Could not archive applications: %s", errs)
@@ -84,104 +61,7 @@ func Archive(cmd *cli.Cmd) {
 	}
 }
 
-func List(cmd *cli.Cmd) {
-	var a []App
-
-	all := cmd.BoolOpt("a all", false, "List all applications, including archived")
-
-	cmd.Action = func() {
-		resp, body, errs := application.List()
-
-		if errs != nil {
-			log.Fatalf("Could not retrieve applications: %s", errs)
-		}
-
-		if resp.StatusCode != 200 {
-			log.Fatalf("Could not retrieve applications: %s", resp.Status)
-		}
-
-		err := json.Unmarshal([]byte(body), &a)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		printAppBrief(a, *all)
-	}
-}
-
-func Show(cmd *cli.Cmd) {
-	uuid := cmd.String(cli.StringArg{
-		Name:      "UUID",
-		Desc:      "Application UUID",
-		HideValue: true,
-	})
-
-	var a App
-
-	cmd.Action = func() {
-		resp, body, errs := application.Show(*uuid)
-
-		if errs != nil {
-			log.Fatalf("Could not retrieve application: %s", errs)
-		}
-
-		if resp.StatusCode != 200 {
-			log.Fatalf("Could not retrieve application: %s", resp.Status)
-		}
-
-		err := json.Unmarshal([]byte(body), &a)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		printAppDetail(a)
-	}
-}
-
-func Deploy(cmd *cli.Cmd) {
-	uuid := cmd.String(cli.StringArg{
-		Name:      "UUID",
-		Desc:      "Application UUID",
-		HideValue: true,
-	})
-
-	cmd.Action = func() {
-
-		var a App
-
-		resp, body, errs := application.Show(*uuid) // TODO remove this duplication of application.Show() logic
-
-		if errs != nil {
-			log.Fatalf("Could not retrieve deployment token: %s", errs)
-		}
-
-		if resp.StatusCode != 200 {
-			log.Fatalf("Could not retrieve deployment token: %s", resp.Status)
-		}
-
-		err := json.Unmarshal([]byte(body), &a)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		resp, _, errs = application.Deploy(*uuid, a.DeploymentToken)
-
-		if errs != nil {
-			log.Fatalf("Could not deploy applications: %s", errs)
-		}
-
-		if resp.StatusCode != 202 {
-			log.Fatalf("Could not deploy applications: %s", resp.Status)
-		}
-
-		fmt.Printf("Deploying application %s\n", *uuid)
-	}
-
-}
-
+//Create an Application.
 func Create(cmd *cli.Cmd) {
 	locationUuid := cmd.String(cli.StringArg{
 		Name:      "LOCATION_UUID",
@@ -231,12 +111,6 @@ func Create(cmd *cli.Cmd) {
 		HideValue: true,
 	})
 
-	providerCredentials := cmd.String(cli.StringOpt{
-		Name:      "c provider_credentials",
-		Desc:      "Credentials to be used for management of application specific cloud resources (i.e. LoadBalancer, etc)",
-		HideValue: true,
-	})
-
 	enVars := cmd.Strings(cli.StringsOpt{
 		Name:      "e env",
 		Desc:      "Environment variable (i.e. MYSQL_PASSWORD=complexpassword",
@@ -268,26 +142,87 @@ func Create(cmd *cli.Cmd) {
 	})
 
 	cmd.Action = func() {
-		var a App
-		var eVars []string
-
-		if *envFile != "" {
-			eVars = readEnvFile(*envFile)
-		} else {
-			eVars = *enVars
+		app := application.Application{
+			Certificates: readCertificates(certificate, privateKey, certificateChain),
+			Environment:  transformEnvironment(envFile, enVars),
+			ImageURL:     *image,
+			Location: map[string]string{
+				"uuid": *locationUuid,
+			},
+			Metadata: metaData(*meta, *labels),
+			Name:     *name,
+			Ports:    *ports,
+			Rules:    transformRules(rules),
+			SSLPorts: *sslPorts,
 		}
 
-		mData := metaData(*meta, *labels)
+		application, resp, errs := app.Create()
 
-		certificates := readCertificates(certificate, privateKey, certificateChain)
-
-		resp, body, errs := application.Create(*locationUuid, certificates, *name, *image, *providerCredentials, mData, eVars, *rules, *ports, *sslPorts)
-		if errs != nil {
-			log.Fatalf("Could not create application: %s", errs)
+		if len(errs) > 0 {
+			log.Fatalf("Could not create application: %s", errs[0])
 		}
 
 		if resp.StatusCode != 201 {
 			log.Fatalf("Could not create application: %s", resp.Status)
+		}
+
+		printAppDetail(application)
+	}
+}
+
+//Deploy an Application
+func Deploy(cmd *cli.Cmd) {
+	uuid := cmd.String(cli.StringArg{
+		Name:      "UUID",
+		Desc:      "Application UUID",
+		HideValue: true,
+	})
+
+	cmd.Action = func() {
+		app := application.Application{
+			UUID: *uuid,
+		}
+
+		application, resp, errs := app.Show() // TODO remove this duplication of application.Show() logic
+
+		if errs != nil {
+			log.Fatalf("Could not retrieve deployment token: %s", errs)
+		}
+
+		if resp.StatusCode != 200 {
+			log.Fatalf("Could not retrieve deployment token: %s", resp.Status)
+		}
+
+		application, resp, errs = application.Deploy()
+
+		if errs != nil {
+			log.Fatalf("Could not deploy application: %s", errs)
+		}
+
+		if resp.StatusCode != 202 {
+			log.Fatalf("Could not deploy application: %s", resp.Status)
+		}
+
+		fmt.Printf("Deploying application %s\n", application.UUID)
+	}
+
+}
+
+//List all Applications
+func List(cmd *cli.Cmd) {
+	var a []application.Application
+
+	all := cmd.BoolOpt("a all", false, "List all applications, including archived")
+
+	cmd.Action = func() {
+		resp, body, errs := application.List()
+
+		if errs != nil {
+			log.Fatalf("Could not retrieve applications: %s", errs)
+		}
+
+		if resp.StatusCode != 200 {
+			log.Fatalf("Could not retrieve applications: %s", resp.Status)
 		}
 
 		err := json.Unmarshal([]byte(body), &a)
@@ -296,10 +231,38 @@ func Create(cmd *cli.Cmd) {
 			log.Fatal(err)
 		}
 
-		printAppDetail(a)
+		printAppBrief(a, *all)
 	}
 }
 
+//Show an Application.
+func Show(cmd *cli.Cmd) {
+	uuid := cmd.String(cli.StringArg{
+		Name:      "UUID",
+		Desc:      "Application UUID",
+		HideValue: true,
+	})
+
+	cmd.Action = func() {
+		app := application.Application{
+			UUID: *uuid,
+		}
+
+		application, resp, errs := app.Show()
+
+		if errs != nil {
+			log.Fatalf("Could not retrieve application: %s", errs)
+		}
+
+		if resp.StatusCode != 200 {
+			log.Fatalf("Could not retrieve application: %s", resp.Status)
+		}
+
+		printAppDetail(application)
+	}
+}
+
+//Patch an Application.
 func Patch(cmd *cli.Cmd) {
 	uuid := cmd.String(cli.StringArg{
 		Name:      "UUID",
@@ -349,12 +312,6 @@ func Patch(cmd *cli.Cmd) {
 		HideValue: true,
 	})
 
-	providerCredentials := cmd.String(cli.StringOpt{
-		Name:      "c provider_credentials",
-		Desc:      "Credentials to be used for management of application specific cloud resources (i.e. LoadBalancer, etc)",
-		HideValue: true,
-	})
-
 	enVars := cmd.Strings(cli.StringsOpt{
 		Name:      "e env",
 		Desc:      "Environment variable (i.e. MYSQL_PASSWORD=complexpassword",
@@ -386,7 +343,10 @@ func Patch(cmd *cli.Cmd) {
 	})
 
 	cmd.Action = func() {
-		var a App
+		app := application.Application{
+			UUID: *uuid,
+		}
+
 		var eVars []string
 
 		if *envFile != "" {
@@ -395,11 +355,32 @@ func Patch(cmd *cli.Cmd) {
 			eVars = *enVars
 		}
 
-		mData := metaData(*meta, *labels)
+		var m string
+		if *meta != "" {
+			mData := metaData(*meta, *labels)
+
+			mdata, err := json.Marshal(mData)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			log.Debug(mdata)
+			m = fmt.Sprintf("%s", mdata)
+		}
 
 		certificates := readCertificates(certificate, privateKey, certificateChain)
 
-		resp, body, errs := application.Patch(*uuid, certificates, *name, *image, *providerCredentials, mData, eVars, *rules, *ports, *sslPorts)
+		c, err := json.Marshal(certificates)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		if string(c) == "{}" {
+			c = []byte("")
+		}
+
+		resp, body, errs := app.Patch(string(c), *name, *image, m, eVars, *rules, *ports, *sslPorts)
 		if errs != nil {
 			log.Fatalf("Could not patch application: %s", errs)
 		}
@@ -408,13 +389,13 @@ func Patch(cmd *cli.Cmd) {
 			log.Fatalf("Could not patch application: %s", resp.Status)
 		}
 
-		err := json.Unmarshal([]byte(body), &a)
+		err = json.Unmarshal([]byte(body), &app)
 
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		printAppDetail(a)
+		printAppDetail(&app)
 	}
 }
 
@@ -429,8 +410,7 @@ func fmtRules(rules map[string]int) string {
 }
 
 //metaData combines the provided list of labels with provided arbitary metadata and asserts the result is proper JSON
-//It returns the metadata JSON string
-func metaData(meta string, labels []string) string {
+func metaData(meta string, labels []string) map[string]interface{} {
 	js := map[string]interface{}{
 		"labels": []string{},
 	}
@@ -447,15 +427,45 @@ func metaData(meta string, labels []string) string {
 		js["labels"] = labels
 	}
 
-	mdata, err := json.Marshal(js)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return fmt.Sprintf("%s", mdata)
+	return js
 }
 
-func printAppBrief(a []App, showAll bool) {
+func transformEnvironment(envFile *string, enVars *[]string) map[string]string {
+	var eVars []string
+	var env map[string]string
+
+	if *envFile != "" {
+		eVars = readEnvFile(*envFile)
+	} else {
+		eVars = *enVars
+	}
+
+	for _, v := range eVars {
+		e := strings.Split("=", v)
+		env[e[0]] = e[1]
+	}
+
+	return env
+}
+
+//Transforms a rule string(i.e. "latest=100") to a proper JSON object(i.e. {"latest":100}
+func transformRules(rules *[]string) map[string]int {
+	rule := map[string]int{}
+
+	for _, v := range *rules {
+		r := strings.Split(v, "=")
+		weight, err := strconv.Atoi(r[1])
+		rule[r[0]] = weight
+
+		if err != nil {
+			log.Fatalf("Error converting weight in rule %s to int", v)
+		}
+	}
+
+	return rule
+}
+
+func printAppBrief(a []application.Application, showAll bool) {
 	var output []string
 
 	output = append(output, fmt.Sprintf("Name | UUID | Status | Location | Ports | SSL Ports | Rules"))
@@ -483,7 +493,7 @@ func fmtPorts(ports []string) string {
 	return ""
 }
 
-func printAppDetail(a App) {
+func printAppDetail(a *application.Application) {
 	var output []string
 	var outputEnv []string
 	fields := structs.New(a).Fields()
@@ -498,7 +508,7 @@ func printAppDetail(a App) {
 			}
 		} else if f.Name() == "Certificates" {
 			output = append(output, fmt.Sprintf("%s:| Use \"--full\" to see certificates", f.Name()))
-			output = append(output, fmt.Sprintf("– PrivateKey: |%s\n", a.Certificates["private_key"]))
+			output = append(output, fmt.Sprintf("– PrivateKey: |%s\n", a.Certificates.PrivateKey))
 		} else if f.Name() == "CreatedAt" {
 			output = append(output, fmt.Sprintf("%s: | %s\n", f.Name(), utils.FormatTime(a.CreatedAt+"Z")))
 		} else if f.Name() == "CurrentDeployments" {
@@ -543,8 +553,8 @@ func printAppDetail(a App) {
 	fmt.Println(columnize.SimpleFormat(outputEnv))
 }
 
-func readCertificates(certificate, privateKey, certificateChain *string) string {
-	var certificates Certificates
+func readCertificates(certificate, privateKey, certificateChain *string) application.Certificates {
+	var certificates application.Certificates
 
 	if *certificate != "" {
 		cert, err := ioutil.ReadFile(*certificate)
@@ -570,17 +580,7 @@ func readCertificates(certificate, privateKey, certificateChain *string) string 
 		certificates.CertificateChain = string(chain)
 	}
 
-	c, err := json.Marshal(certificates)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if string(c) == "{}" {
-		c = []byte("")
-	}
-
-	return string(c)
+	return certificates
 }
 
 func readEnvFile(file string) []string {

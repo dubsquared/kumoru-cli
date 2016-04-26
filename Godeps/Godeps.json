@@ -14,7 +14,7 @@
 		},
 		{
 			"ImportPath": "github.com/fatih/structs",
-			"Rev": "9a7733345ff091c5457cb963f498a79ecd0bdbaa"
+			"Rev": "73c4e3dc02a78deaba8640d5f3a8c236ec1352bf"
 		},
 		{
 			"ImportPath": "github.com/jawher/mow.cli",
@@ -22,23 +22,23 @@
 		},
 		{
 			"ImportPath": "github.com/kumoru/kumoru-sdk-go/RootCAs",
-			"Rev": "d9bc9d72cfc6d6df2d5f46414d6e51c618041b83"
+			"Rev": "35118781ba825634d081f9afa089e865c228667c"
 		},
 		{
 			"ImportPath": "github.com/kumoru/kumoru-sdk-go/kumoru",
-			"Rev": "d9bc9d72cfc6d6df2d5f46414d6e51c618041b83"
+			"Rev": "35118781ba825634d081f9afa089e865c228667c"
 		},
 		{
 			"ImportPath": "github.com/kumoru/kumoru-sdk-go/service/application",
-			"Rev": "d9bc9d72cfc6d6df2d5f46414d6e51c618041b83"
+			"Rev": "35118781ba825634d081f9afa089e865c228667c"
 		},
 		{
 			"ImportPath": "github.com/kumoru/kumoru-sdk-go/service/authorization",
-			"Rev": "d9bc9d72cfc6d6df2d5f46414d6e51c618041b83"
+			"Rev": "35118781ba825634d081f9afa089e865c228667c"
 		},
 		{
 			"ImportPath": "github.com/kumoru/kumoru-sdk-go/service/pools",
-			"Rev": "d9bc9d72cfc6d6df2d5f46414d6e51c618041b83"
+			"Rev": "35118781ba825634d081f9afa089e865c228667c"
 		},
 		{
 			"ImportPath": "github.com/ryanuber/columnize",
