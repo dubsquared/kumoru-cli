@@ -39,7 +39,7 @@ func init() {
 	log.SetOutput(os.Stderr)
 }
 
-var Version = "0.1.2"
+var Version = "0.1.3"
 var GitVersion = "No Version Provided"
 var BuildStamp = "No Build Stamp Provided"
 
@@ -81,6 +81,7 @@ func main() {
 
 	app.Command("secrets", "Secrets actions", func(sec *cli.Cmd) {
 		sec.Command("create", "Create secret", secrets.Create)
+		sec.Command("list", "List secrets", secrets.List)
 		sec.Command("show", "Show secret", secrets.Show)
 	})
 

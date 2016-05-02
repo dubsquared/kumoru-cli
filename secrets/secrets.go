@@ -57,6 +57,22 @@ func Create(cmd *cli.Cmd) {
 	}
 }
 
+func List(cmd *cli.Cmd) {
+	cmd.Action = func() {
+		secrets, resp, errs := secrets.List()
+
+		if len(errs) > 0 {
+			log.Fatalf("Could not retrieve secret: %s", errs[0])
+		}
+
+		if resp.StatusCode != 200 {
+			log.Fatalf("Could not retrieve secret: %s", resp.Status)
+		}
+
+		printSecretBrief(secrets)
+	}
+}
+
 func Show(cmd *cli.Cmd) {
 	secretUuid := cmd.String(cli.StringArg{
 		Name:      "SECRET_UUID",
@@ -78,6 +94,18 @@ func Show(cmd *cli.Cmd) {
 
 		printSecretDetail(*secret)
 	}
+}
+
+func printSecretBrief(apps []*secrets.Secret) {
+	var output []string
+
+	output = append(output, fmt.Sprintf("UUID"))
+
+	for i := 0; i < len(apps); i++ {
+		output = append(output, fmt.Sprintf("%s", apps[i].Uuid))
+	}
+
+	fmt.Println(columnize.SimpleFormat(output))
 }
 
 func printSecretDetail(s secrets.Secret) {
