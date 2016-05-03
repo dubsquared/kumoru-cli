@@ -18,6 +18,7 @@ package locations
 
 import (
 	"fmt"
+	"strings"
 
 	log "github.com/Sirupsen/logrus"
 
@@ -48,7 +49,7 @@ func Add(cmd *cli.Cmd) {
 			log.Fatalf("Cloud not add new location: %s", resp.Status)
 		}
 
-		PrintLocationBrief([]pools.Location{*location})
+		PrintLocationBrief([]pools.Location{*location}, false)
 	}
 }
 
@@ -76,6 +77,8 @@ func Archive(cmd *cli.Cmd) {
 }
 
 func List(cmd *cli.Cmd) {
+	all := cmd.BoolOpt("a all", false, "List all locations, including archived")
+
 	cmd.Action = func() {
 		l := pools.Location{}
 		locations, resp, errs := l.List()
@@ -88,17 +91,21 @@ func List(cmd *cli.Cmd) {
 			log.Fatalf("Cloud not retrieve locations: %s", resp.Status)
 		}
 
-		PrintLocationBrief(*locations)
+		PrintLocationBrief(*locations, *all)
 	}
 }
 
-func PrintLocationBrief(l []pools.Location) {
+func PrintLocationBrief(l []pools.Location, showAll bool) {
 	var output []string
 
 	output = append(output, fmt.Sprintf("Location | Provider | UUID | Status | Aggregrate Resources"))
 
 	for i := 0; i < len(l); i++ {
-		output = append(output, fmt.Sprintf("%s | %s | %s| %s| %v vCPU, %vGB RAM", l[i].Identifier, l[i].Provider, l[i].Uuid, l[i].Status, l[i].AggregateResources["cpu"], l[i].AggregateResources["ram"]))
+		if showAll {
+			output = append(output, fmt.Sprintf("%s | %s | %s| %s| %v vCPU, %vGB RAM", l[i].Identifier, l[i].Provider, l[i].Uuid, l[i].Status, l[i].AggregateResources["cpu"], l[i].AggregateResources["ram"]))
+		} else if strings.ToLower(string(l[i].Status)) != "archived" {
+			output = append(output, fmt.Sprintf("%s | %s | %s| %s| %v vCPU, %vGB RAM", l[i].Identifier, l[i].Provider, l[i].Uuid, l[i].Status, l[i].AggregateResources["cpu"], l[i].AggregateResources["ram"]))
+		}
 	}
 
 	fmt.Println(columnize.SimpleFormat(output))
