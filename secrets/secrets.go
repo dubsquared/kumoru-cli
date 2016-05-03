@@ -29,20 +29,24 @@ import (
 )
 
 func Create(cmd *cli.Cmd) {
-	value := cmd.String(cli.StringOpt{
-		Name:      "v value",
+	value := cmd.String(cli.StringArg{
+		Name:      "VALUE",
 		Desc:      "Value to be stored as secret",
 		HideValue: true,
 	})
 
-	cmd.Action = func() {
-		s := secrets.Secret{}
+	labels := cmd.Strings(cli.StringsOpt{
+		Name:      "l label",
+		Desc:      "Label to attach to Secret. This option may be included more than once.",
+		HideValue: true,
+	})
 
-		if *value == "" {
-			log.Fatal("Value must not be an empty string")
+	cmd.Action = func() {
+		s := secrets.Secret{
+			Value:  *value,
+			Labels: *labels,
 		}
 
-		s.Value = *value
 		secret, resp, errs := s.Create()
 
 		if len(errs) > 0 {
@@ -53,7 +57,7 @@ func Create(cmd *cli.Cmd) {
 			log.Fatalf("Could not create secret: %s", resp.Status)
 		}
 
-		printSecretDetail(*secret)
+		printSecretDetail(secret)
 	}
 }
 
@@ -92,23 +96,23 @@ func Show(cmd *cli.Cmd) {
 			log.Fatalf("Could not retrieve secret: %s", resp.Status)
 		}
 
-		printSecretDetail(*secret)
+		printSecretDetail(secret)
 	}
 }
 
 func printSecretBrief(apps []*secrets.Secret) {
 	var output []string
 
-	output = append(output, fmt.Sprintf("UUID"))
+	output = append(output, fmt.Sprintf("UUID | Created At | Labels"))
 
 	for i := 0; i < len(apps); i++ {
-		output = append(output, fmt.Sprintf("%s", apps[i].Uuid))
+		output = append(output, fmt.Sprintf("%s | %s | %s", apps[i].Uuid, utils.FormatTime(apps[i].CreatedAt+"Z"), apps[i].Labels))
 	}
 
 	fmt.Println(columnize.SimpleFormat(output))
 }
 
-func printSecretDetail(s secrets.Secret) {
+func printSecretDetail(s *secrets.Secret) {
 	var output []string
 	fields := structs.New(s).Fields()
 
